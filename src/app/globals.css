@@ -1,8 +1,12 @@
 @import "tailwindcss";
+@import "@fontsource/roboto/index.css";
+
 
 :root {
   --background: #ffffff;
   --foreground: #171717;
+    --font-figtree: initial;
+
 }
 
 @theme inline {
@@ -10,17 +14,26 @@
   --color-foreground: var(--foreground);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+    --font-sans: var(--font-figtree);
+
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #ededed;
+    --background: #ffffff;
     --foreground: #ededed;
+      --font-figtree: var(--font-figtree);
+
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  /* font-family: Arial, Helvetica, sans-serif; */
+    /* font-family: var(--font-geist-sans); */
+  /* font-family: "Roboto", sans-serif; */
+    font-family: var(--font-figtree), sans-serif;
+
+
 }
