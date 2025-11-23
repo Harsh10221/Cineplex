@@ -1,36 +1,35 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+Phase 1: The Foundation (Today)
+Goal: Define the Relational Schema and Seed the Database.
 
-## Getting Started
+Why: You cannot book a movie if there are no movies in the database.
 
-First, run the development server:
+Task: Create tables for Movie, Show, and Booking.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+📌 Phase 2: The Display (Tomorrow)
+Goal: Show the movies and specific showtimes.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Why: Users need to click "Avengers" -> Select "5:00 PM".
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Task: Fetch data using Server Components.
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+📌 Phase 3: The Seat Layout (The UI Challenge)
+Goal: Render a grid of seats (A1...H10).
 
-## Learn More
+Logic:
 
-To learn more about Next.js, take a look at the following resources:
+Fetch "Booked Seats" for that specific show.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+If Booking table has "A1", render it Red (Disabled).
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+If not, render it Green (Available).
 
-## Deploy on Vercel
+📌 Phase 4: The Transaction (The "Senior" Logic)
+Goal: The Booking Action.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Logic:
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+User clicks "Book A1".
+
+Prisma Transaction: Check if A1 is free -> If yes, Create Booking -> If no, Throw Error.
+
+Concurrency: Handle the race condition where 2 people click exactly at once.
