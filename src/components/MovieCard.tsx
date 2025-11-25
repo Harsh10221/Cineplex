@@ -2,7 +2,9 @@ import Image from 'next/image';
 import Link from 'next/link';
 import React from 'react';
 
-function MovieCard() {
+function MovieCard({movieData}:any) {
+
+    console.log("movid",movieData.posterUrl)
     return (
         // <>
         <Link href={`/movie/${"kantara"}`}>
@@ -16,12 +18,13 @@ function MovieCard() {
                 <div className='w-full  h-auto'>
                     <Image
                         className='w-full h-auto object-cover'
-                        src="https://image.tmdb.org/t/p/w300/fGodXWqJkkkbSebPIlxLSygV8GY.jpg"
+                        src={movieData.posterUrl}
                         alt="Kantara Movie Poster"
                         width={300}
                         height={450}
                     />
                 </div>
+        {/* // hostname: "www.themoviedb.org", */}
 
                 <div className='p-2'>
                     <div className='
@@ -32,7 +35,7 @@ function MovieCard() {
                     truncate
                     mb-0.5
                 '>
-                        Kantara A Legend: Chapter 1 (The Long Title)
+                        {movieData.title}
                     </div>
 
                     <div className='
@@ -40,7 +43,7 @@ function MovieCard() {
                     text-gray-600
                     whitespace-nowrap
                 '>
-                        U/A &bull; Hindi, Kannada,...
+                        {movieData.certificate} &bull; {movieData.languages}
                     </div>
                 </div>
             </div>

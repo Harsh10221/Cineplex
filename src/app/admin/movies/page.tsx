@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { X, Plus, Search } from "lucide-react";
+import { addMovie, getAllMovies } from "@/src/actions/movies";
 
 // --- Types ---
 interface Movie {
@@ -12,11 +13,11 @@ interface Movie {
   trailerUrl: string;
   duration: number; // in minutes
   releaseDate: string; // YYYY-MM-DD
-  genre: string; // e.g. "Action, Sci-Fi"
-  language: string; // e.g. "English, Hindi"
-  certificate: "U" | "U/A" | "A" | "S"; 
+  genres: string; // e.g. "Action, Sci-Fi"
+  languages: string; // e.g. "English, Hindi"
+  certificate: "U" | "UA" | "A" | "S";
   cast: string; // e.g. "Matthew McConaughey, Anne Hathaway"
-  status: "Now Showing" | "Upcoming";
+  status: "NOW_SHOWING" | "UPCOMING";
 }
 
 // --- 1. THE EDIT/ADD MODAL COMPONENT ---
@@ -42,11 +43,11 @@ function MovieFormModal({
     trailerUrl: "",
     duration: 0,
     releaseDate: "",
-    genre: "",
-    language: "",
-    certificate: "U/A",
+    genres: "",
+    languages: "",
+    certificate: "UA",
     cast: "",
-    status: "Upcoming",
+    status: "UPCOMING",
   };
 
   const [formData, setFormData] = useState<Movie>(initialState);
@@ -65,7 +66,7 @@ function MovieFormModal({
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4 overflow-y-auto">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-2xl my-8 animate-in fade-in zoom-in duration-200">
-        
+
         {/* Header */}
         <div className="flex justify-between items-center px-6 py-4 border-b border-gray-100 bg-white rounded-t-xl">
           <h2 className="text-xl font-bold text-gray-900">
@@ -78,7 +79,7 @@ function MovieFormModal({
 
         {/* Form Body */}
         <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4 max-h-[70vh] overflow-y-auto bg-white">
-          
+
           {/* Title (Full Width) */}
           <div className="md:col-span-2">
             <label className={labelClasses}>Movie Title</label>
@@ -163,7 +164,7 @@ function MovieFormModal({
               className={inputClasses}
             >
               <option value="U">U (Universal)</option>
-              <option value="U/A">U/A (Parental Guidance)</option>
+              <option value="UA">UA (Parental Guidance)</option>
               <option value="A">A (Adults Only)</option>
               <option value="S">S (Special)</option>
             </select>
@@ -187,8 +188,8 @@ function MovieFormModal({
           <div className="md:col-span-2">
             <label className={labelClasses}>Languages (Comma separated)</label>
             <input
-              name="language"
-              value={formData.language}
+              name="languages"
+              value={formData.languages}
               onChange={handleChange}
               className={inputClasses}
               placeholder="e.g. English, Hindi, Tamil"
@@ -199,8 +200,8 @@ function MovieFormModal({
           <div className="md:col-span-2">
             <label className={labelClasses}>Genres (Comma separated)</label>
             <input
-              name="genre"
-              value={formData.genre}
+              name="genres"
+              value={formData.genres}
               onChange={handleChange}
               className={inputClasses}
               placeholder="e.g. Sci-Fi, Drama, Adventure"
@@ -273,9 +274,8 @@ function MovieCard({
           className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
         />
         <div className="absolute top-3 left-3 flex gap-2">
-          <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded shadow-sm ${
-            movie.status === "Now Showing" ? "bg-green-500 text-white" : "bg-blue-500 text-white"
-          }`}>
+          <span className={`px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded shadow-sm ${movie.status === "NOW_SHOWING" ? "bg-green-500 text-white" : "bg-blue-500 text-white"
+            }`}>
             {movie.status}
           </span>
           <span className="px-2.5 py-1 text-[10px] font-bold uppercase tracking-wider rounded shadow-sm bg-white/90 text-gray-900 backdrop-blur-sm">
@@ -289,15 +289,15 @@ function MovieCard({
         <h3 className="font-bold text-gray-900 text-lg mb-1 line-clamp-1 leading-tight" title={movie.title}>
           {movie.title}
         </h3>
-        
+
         <div className="space-y-1.5 mb-4">
           <p className="text-xs text-gray-500 font-medium flex items-center gap-2">
-            <span>{movie.genre}</span>
+            <span>{movie.genres}</span>
             <span className="w-1 h-1 bg-gray-300 rounded-full"></span>
             <span>{formatDuration(movie.duration)}</span>
           </p>
           <p className="text-xs text-gray-500 line-clamp-1">
-            <span className="font-semibold text-gray-700">Lang:</span> {movie.language}
+            <span className="font-semibold text-gray-700">Lang:</span> {movie.languages}
           </p>
           <p className="text-xs text-gray-500">
             <span className="font-semibold text-gray-700">Release:</span> {movie.releaseDate}
@@ -329,6 +329,12 @@ export default function AdminMoviesPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingMovie, setEditingMovie] = useState<Movie | null>(null);
 
+  // useEffect(() => {
+  //   getAllMovies()
+    
+  // }, [])
+  
+  
   // Mock Data
   const [movies, setMovies] = useState<Movie[]>([
     {
@@ -338,12 +344,12 @@ export default function AdminMoviesPage() {
       posterUrl: "https://www.themoviedb.org/t/p/w1280/ehQPboTPaIMkMUOoNOh8e7pZ5Rp.jpg",
       trailerUrl: "",
       duration: 165,
-      genre: "Action, Drama",
-      language: "Hindi, Kannada",
+      genres: "Action, Drama",
+      languages: "Hindi, Kannada",
       releaseDate: "2025-10-02",
-      certificate: "U/A",
+      certificate: "UA",
       cast: "Rishab Shetty, Sapthami Gowda",
-      status: "Now Showing",
+      status: "NOW_SHOWING",
     },
     {
       id: "2",
@@ -352,12 +358,12 @@ export default function AdminMoviesPage() {
       posterUrl: "https://www.themoviedb.org/t/p/w1280/vqBmyAj0Xm9LnS1xe1MSlMAJyHq.jpg",
       trailerUrl: "",
       duration: 135,
-      genre: "Drama, Sport",
-      language: "English",
+      genres: "Drama, Sport",
+      languages: "English",
       releaseDate: "2025-06-25",
       certificate: "U",
       cast: "Brad Pitt, Damson Idris",
-      status: "Now Showing",
+      status: "NOW_SHOWING",
     }
   ]);
 
@@ -378,17 +384,53 @@ export default function AdminMoviesPage() {
     }
   };
 
-  const handleSave = (movieData: Movie) => {
-    if (movieData.id) {
-      // Edit Existing
-      setMovies((prev) => prev.map((m) => (m.id === movieData.id ? movieData : m)));
-    } else {
-      // Add New (Generate fake ID)
-      const newMovie = { ...movieData, id: Math.random().toString() };
-      setMovies((prev) => [...prev, newMovie]);
+
+  const handleSave = async (movieData: Movie) => {
+    // Prepare data object (mapping UI fields to Server Action fields)
+    const payload = {
+      id: movieData.id,
+      title: movieData.title,
+      description: movieData.description,
+      posterUrl: movieData.posterUrl,
+      trailerUrl: movieData.trailerUrl,
+      duration: movieData.duration,
+      releaseDate: movieData.releaseDate,
+      genres: movieData.genres,       // Map UI 'genre' to DB 'genres'
+      languages: movieData.languages, // Map UI 'language' to DB 'languages'
+      certificate: movieData.certificate,
+      cast: movieData.cast,
+      status: (movieData.status === "NOW_SHOWING" ? "NOW_SHOWING" : "UPCOMING") as "NOW_SHOWING" | "UPCOMING"
+      // status: movieData.status === "NOW_SHOWING" ? "NOW_SHOWING" : "UPCOMING"
+    };
+
+    let result;
+    try {
+      result =  await addMovie(payload)
+      console.log("This is result ",result)
+      if (!result.success) {
+        return
+      }
+      setIsModalOpen(false)
+
+    } catch (error) {
+      throw console.error(error)
     }
-    setIsModalOpen(false);
+    // if (movieData.id) {
+    //   // Edit Logic
+    //   result = await updateMovie(payload);
+    // } else {
+    //   // Add Logic
+    //   result = await addMovie(payload);
+    // }
+
+    // if (result?.success) {
+    //   setIsModalOpen(false);
+    // Optional: Trigger a toast notification here
+    // } else {
+    //   alert("Error: " + result?.message);
+    // }
   };
+
 
   return (
     <div className="space-y-8">
@@ -401,17 +443,17 @@ export default function AdminMoviesPage() {
           <h1 className="text-2xl font-bold text-gray-900">Movie Management</h1>
           <p className="text-sm text-gray-500 mt-1">Manage your film inventory and details.</p>
         </div>
-        
+
         <div className="flex gap-3 w-full sm:w-auto">
           <div className="relative flex-1 sm:w-64">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
-            <input 
-              type="text" 
-              placeholder="Search movies..." 
+            <input
+              type="text"
+              placeholder="Search movies..."
               className="w-full text-gray-500 pl-10 placeholder:text-gray-500 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-red-500 outline-none"
             />
           </div>
-          <button 
+          <button
             onClick={handleAddClick}
             className="flex items-center gap-2 bg-red-600 text-white px-5 py-2.5 rounded-lg font-semibold text-sm hover:bg-red-700 transition shadow-sm whitespace-nowrap"
           >

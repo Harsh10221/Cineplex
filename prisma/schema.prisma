@@ -35,13 +35,31 @@ model Booking {
   @@unique([showId,row,seatNumber])
 }
 
+enum Certificate {
+  U
+  UA 
+  A
+  S
+}
+
+enum MovieStatus {
+  UPCOMING
+  NOW_SHOWING 
+}
+
 model Movie {
   id          String  @id @default(uuid())
-  title       String
+  title       String @unique
   description String
   duration    Int
-  language    String 
   posterUrl   String?
+  trailerUrl String?
+  releaseDate DateTime
+  languages   String
+  genres      String
+  cast        String
+  certificate Certificate @default(UA)
+  status      MovieStatus @default(UPCOMING)
 
   Show Show[]
 }

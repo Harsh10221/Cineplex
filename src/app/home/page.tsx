@@ -3,8 +3,14 @@ import SearchBar from '@/src/components/SearchBar'
 import MovieCard from '@/src/components/MovieCard'
 import AppFooter from '@/src/components/AppFooter'
 import MovieDetailScreen from '@/src/components/MovieDetailScreen'
+import { getAllMovies } from '@/src/actions/movies'
+import { useEffect } from 'react'
 
 function Page() {
+
+ 
+  
+
   return (
     <div className='w-full h-full'  >
 

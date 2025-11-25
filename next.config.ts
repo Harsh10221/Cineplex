@@ -7,8 +7,15 @@ const nextConfig: NextConfig = {
     remotePatterns: [
       {
         protocol: "https",
+        // hostname: "image.tmdb.org",
+        hostname: "www.themoviedb.org",     
+       },
+      {
+        protocol: "https",
         hostname: "image.tmdb.org",
-      },
+        // hostname: "www.themoviedb.org",     
+       }
+
     ],
   },
 };
