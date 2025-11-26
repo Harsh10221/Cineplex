@@ -1,47 +1,84 @@
-import Link from 'next/link';
 import React from 'react';
 
-// Reusable Button Component for uniformity
-const LanguageButton = ({ label, onClick }:any) => (
-  <button
-    onClick={onClick}
-    className="
-      w-full
-      py-3
-      bg-gray-50             /* Very light gray background */
-      border border-red-500  
-      rounded-xl             /* Rounded corners for buttons */
-      text-gray-900          /* Dark text */
-      font-medium
-      hover:bg-red-50        /* Subtle hover effect */
-      transition-colors duration-200
-    "
-  >
-    {label}
-  </button>
-);
+// 1. Reusable Option Button
+// Handles both Links (for navigation) and Buttons (for actions)
+const LanguageOption = ({ label, onClick, href }: { label: string, onClick?: () => void, href?: string }) => {
+  const commonClasses = `
+    w-full
+    py-4
+    rounded-xl
+    font-semibold
+    text-base
+    transition-all duration-300
+    
+    /* Default Dark State */
+    bg-white/5 
+    border border-white/10
+    text-gray-300
+    
+    /* Hover State - lit up with Red brand color */
+    hover:bg-red-600 
+    hover:border-red-600 
+    hover:text-white
+    hover:shadow-lg hover:shadow-red-600/30
+    hover:-translate-y-0.5
+    
+    active:scale-[0.98]
+    flex items-center justify-center
+  `;
 
-function LanguageModal({ isOpen, onClose, onSelect }:any) {
-  // if (!isOpen) return null;
+  if (href) {
+    return (
+      // Changed Link to a for preview compatibility
+      <a href={href} className={commonClasses}>
+        {label}
+      </a>
+    );
+  }
 
   return (
-    // 1. Overlay (Backdrop)
-    // <Link href={} >
-    
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#00000070]  p-4">
+    <button onClick={onClick} className={commonClasses}>
+      {label}
+    </button>
+  );
+};
+
+// 2. Main Modal Component
+function LanguageModal({ onClose, onSelect }: any) {
+  return (
+    // Overlay (Backdrop) with Blur
+    // z-[100] ensures it sits on top of everything
+    <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
       
-      
-      {/* 2. Modal Container */}
-      <div className="bg-white w-full max-w-sm rounded-2xl p-6 shadow-2xl relative animate-in fade-in zoom-in duration-200">
+      {/* Dark blurred background */}
+      <div 
+        className="absolute inset-0 bg-black/50 backdrop-blur-md animate-in fade-in duration-300"
+        onClick={onClose}
+      ></div>
+
+      {/* Modal Card - Dark Theme */}
+      <div className="
+        relative 
+        w-full max-w-sm 
+        bg-[#16213e] /* Matches App Theme */
+        border border-white/10
+        rounded-3xl 
+        p-8 
+        shadow-2xl shadow-black/50
+        animate-in fade-in zoom-in-95 duration-300
+      ">
         
         {/* Header */}
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-bold text-gray-900">Select Language</h2>
+        <div className="flex justify-between items-center mb-8">
+          <div>
+            <h2 className="text-2xl font-bold text-white tracking-wide">Select Language</h2>
+            <p className="text-xs text-gray-400 mt-1">Choose your preferred audio language</p>
+          </div>
           
           {/* Close Button (X) */}
           <button 
             onClick={onClose}
-            className="text-gray-400 hover:text-gray-600 transition-colors p-1"
+            className="text-gray-400 hover:text-white hover:bg-white/10 transition-colors p-2 rounded-full"
           >
             <svg 
               xmlns="http://www.w3.org/2000/svg" 
@@ -49,7 +86,7 @@ function LanguageModal({ isOpen, onClose, onSelect }:any) {
               fill="none" 
               viewBox="0 0 24 24" 
               stroke="currentColor" 
-              strokeWidth={2}
+              strokeWidth={2.5}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -57,19 +94,28 @@ function LanguageModal({ isOpen, onClose, onSelect }:any) {
         </div>
 
         {/* Buttons List */}
-        <div className="flex flex-col space-y-4">
-          <Link href={`/movie/${"kanrata"}/shows?lang=Hindi`} >
-          <LanguageButton label="Hindi"  />
-          </Link>
+        <div className="flex flex-col space-y-3">
+          {/* Option 1 */}
+          <LanguageOption 
+            label="Hindi" 
+            href={`/movie/kantara/shows?lang=Hindi`} 
+          />
 
-          <LanguageButton label="Kannada" onClick={() => onSelect('Kannada')} />
+          {/* Option 2 */}
+          <LanguageOption 
+            label="Kannada" 
+            onClick={() => onSelect && onSelect('Kannada')} 
+          />
 
-          <LanguageButton label="Telugu" onClick={() => onSelect('Telugu')} />
+          {/* Option 3 */}
+          <LanguageOption 
+            label="Telugu" 
+            onClick={() => onSelect && onSelect('Telugu')} 
+          />
         </div>
 
       </div>
     </div>
-    // </Link>
   );
 }
 

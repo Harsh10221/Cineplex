@@ -1,5 +1,6 @@
 "use server"
 import { db } from "@/lib/db"
+import { readSync } from "fs";
 import { revalidatePath } from "next/cache"
 
 
@@ -59,7 +60,7 @@ export async function getAllMovies() {
   try {
     
     const result = await db.movie.findMany()
-
+    console.log("This is data",result)
    return { success: true, message: "Movie Fetched Successfully",Movie:result }
     
   } catch (error:any) {
