@@ -74,6 +74,8 @@ model Show {
   screenId String
   screen   Screen @relation(fields: [screenId], references: [id])
 
+  
+
   price Int @default(0)
 
   bookings Booking[]

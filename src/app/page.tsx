@@ -10,6 +10,7 @@ import {
 import { PlayCircleIcon } from '@heroicons/react/24/solid'
 import { getAllMovies } from '../actions/movies';
 import MovieCard from '../components/MovieCard';
+import { useQuery } from '@tanstack/react-query';
 
 // --- IMPORTANT: UNCOMMENT THIS IN YOUR LOCAL PROJECT ---
 // import { getAllMovies } from '../actions/movies' 
@@ -278,14 +279,32 @@ function AppFooter() {
 function Page() {
   const [movies, setmovies] = useState<Movie[]>([])
 
-  useEffect(() => {
-    const helperFun = async () => {
+//   useEffect(() => {
+//     const helperFun = async () => {
+//       const MovieData: any = await getAllMovies()
+//       // console.log("movie",MovieData)
+//       setmovies(MovieData?.Movie || []) 
+//     }
+//     helperFun()
+//   }, [])
+
+  const helperFun = async () => {
       const MovieData: any = await getAllMovies()
+      return MovieData.Movie
       // console.log("movie",MovieData)
-      setmovies(MovieData?.Movie || []) 
+    //   setmovies(MovieData?.Movie || []) 
     }
-    helperFun()
-  }, [])
+    // helperFun()
+
+  const {isPending, error, data}:any = useQuery({
+    queryKey: ['movieCardData'],
+    queryFn: async () => await getAllMovies()
+
+
+  })
+
+  console.log("This is data",data)
+
 
   return (
     <div className='min-h-screen bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white flex flex-col relative overflow-x-hidden font-sans'>
@@ -327,7 +346,7 @@ function Page() {
 
         {/* Responsive Grid */}
         <div className='grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-x-4 gap-y-8 sm:gap-x-6 sm:gap-y-10'>
-        {movies?.map((Data) => (
+        {data?.Movie?.map((Data:any) => (
             <div key={Data.id} className="relative group perspective-1000">
                 {/* <div className="transform transition-all duration-300 group-hover:-translate-y-2 group-hover:shadow-2xl shadow-black/50 rounded-xl overflow-hidden h-full"> */}
                 <MovieCard movieData={Data} />

@@ -4,11 +4,11 @@ import React from 'react';
 
 function MovieCard({ movieData }: any) {
     // Ideally, remove console.logs in production
-    // console.log("movid", movieData.posterUrl)
+    console.log("movid", movieData)
 
     return (
         // LOGIC NOTE: You are hardcoding "kantara". You should probably use movieData.id or movieData.title here.
-        <Link href={`/movie/${"kantara"}`} className="block w-full h-full">
+        <Link href={`/movie/${movieData.id}`} className="block w-full h-full">
             <div className='
                 group
                 w-full

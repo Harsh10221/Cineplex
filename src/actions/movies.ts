@@ -1,6 +1,7 @@
 "use server"
 import { db } from "@/lib/db"
-import { readSync } from "fs";
+import { error, time } from "console";
+import { access, readSync } from "fs";
 import { revalidatePath } from "next/cache"
 
 
@@ -48,7 +49,7 @@ export async function addMovie(data: MovieFormData) {
 
         return { success: true, message: "Movie added successfully" }
 
-    } catch (error:any ) {
+    } catch (error: any) {
         console.error("Failed to add movie:", error.message)
         return { success: false, message: `There is an erro :${error.message}`, }
     }
@@ -57,17 +58,81 @@ export async function addMovie(data: MovieFormData) {
 }
 
 export async function getAllMovies() {
-  try {
-    
-    const result = await db.movie.findMany()
-    console.log("This is data",result)
-   return { success: true, message: "Movie Fetched Successfully",Movie:result }
-    
-  } catch (error:any) {
-    console.error("Error while fetching movies",error.message) 
-    return { success: false, message: `There is Error while fetching  :${error.message}`, }
+    try {
 
-  }
+        const result = await db.movie.findMany()
+        // console.log("This is data",result)
+        return { Movie: result }
 
-//    return {}
+    } catch (error: any) {
+        console.error("Error while fetching movies", error.message)
+        return { success: false, message: `There is Error while fetching  :${error.message}`, }
+
+    }
+
+    //    return {}
+}
+
+export async function getShow(movieId: string) {
+    console.log("movieid", movieId)
+
+    if (!movieId) {
+        throw new Error("Movie id not required ")
+    }
+
+    const result = await db.show.findMany({
+        where: {
+            movieId: movieId
+        },
+        include: {
+            screen: {
+                include: {
+                    theater: true
+                }
+            }
+
+        }
+    })
+
+    // console.log("result", result)
+    // console.log("result",JSON.stringify(result))
+
+    const formatedData = result.reduce((acc, show): any => {
+
+        // console.log("this is show", show)
+
+        const theaterName = show.screen.theater.name
+
+        if (!acc[theaterName]) {
+
+            acc[theaterName] = {
+                name: show.screen.theater.name,
+                movieId: show.movieId,
+                location: show.screen.theater.location,
+                shows: [
+                   
+                ]
+            }
+        }
+
+        const obj = {
+            startTime: show.startTime,
+            showId : show.id
+        }
+
+        acc[theaterName].shows.push(obj)
+
+
+
+        return acc
+
+    }, {})
+
+    // console.log("This is before values ", formatedData)
+    const theaterList = Object.values(formatedData)
+    // console.log("This is after values ", theaterList)
+
+    return theaterList
+
+    // console.log("This is formateData", formatedData)
 }

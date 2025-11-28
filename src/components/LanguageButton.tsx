@@ -1,4 +1,7 @@
-import React from 'react';
+
+import Link from 'next/link';
+import { useParams, useRouter, useSearchParams } from 'next/navigation';
+
 
 // 1. Reusable Option Button
 // Handles both Links (for navigation) and Buttons (for actions)
@@ -44,14 +47,29 @@ const LanguageOption = ({ label, onClick, href }: { label: string, onClick?: () 
 };
 
 // 2. Main Modal Component
-function LanguageModal({ onClose, onSelect }: any) {
+function LanguageModal({ movieData, onClose, onSelect }: any) {
+
+  // const router = useRouter()
+  // const pathname = useParams()
+  // const searchParams = useSearchParams()
+
+  // console.log("pathname",pathname)
+  // console.log("searchparams",searchParams)
+
+  // const handleNavigateToSeats = () => {
+  //   const currentPath = pathname
+
+
+  // }
+
+
   return (
     // Overlay (Backdrop) with Blur
     // z-[100] ensures it sits on top of everything
     <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
-      
+
       {/* Dark blurred background */}
-      <div 
+      <div
         className="absolute inset-0 bg-black/50 backdrop-blur-md animate-in fade-in duration-300"
         onClick={onClose}
       ></div>
@@ -67,25 +85,25 @@ function LanguageModal({ onClose, onSelect }: any) {
         shadow-2xl shadow-black/50
         animate-in fade-in zoom-in-95 duration-300
       ">
-        
+
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
             <h2 className="text-2xl font-bold text-white tracking-wide">Select Language</h2>
             <p className="text-xs text-gray-400 mt-1">Choose your preferred audio language</p>
           </div>
-          
+
           {/* Close Button (X) */}
-          <button 
+          <button
             onClick={onClose}
             className="text-gray-400 hover:text-white hover:bg-white/10 transition-colors p-2 rounded-full"
           >
-            <svg 
-              xmlns="http://www.w3.org/2000/svg" 
-              className="h-6 w-6" 
-              fill="none" 
-              viewBox="0 0 24 24" 
-              stroke="currentColor" 
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-6 w-6"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
               strokeWidth={2.5}
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -96,22 +114,22 @@ function LanguageModal({ onClose, onSelect }: any) {
         {/* Buttons List */}
         <div className="flex flex-col space-y-3">
           {/* Option 1 */}
-          <LanguageOption 
-            label="Hindi" 
-            href={`/movie/kantara/shows?lang=Hindi`} 
-          />
+          {/* {
+            console.log("moviedata",movieData.languages.split(","))
+          } */}
+          {movieData?.languages?.split(",").map((item: any) => (
 
-          {/* Option 2 */}
-          <LanguageOption 
-            label="Kannada" 
-            onClick={() => onSelect && onSelect('Kannada')} 
-          />
+            // console.log("item",item)
 
-          {/* Option 3 */}
-          <LanguageOption 
-            label="Telugu" 
-            onClick={() => onSelect && onSelect('Telugu')} 
-          />
+            <Link key={item.id} href={`/movie/${movieData?.id}/shows?lang=${item}`}  >
+              <LanguageOption
+                label={item}
+              />
+            </Link>
+
+          ))}
+
+
         </div>
 
       </div>
