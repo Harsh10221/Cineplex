@@ -1,7 +1,8 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Search, Plus, MapPin, X, Building2, Edit2, Trash2 } from "lucide-react";
+import { addTheater, deleteTheater, getAllTheater } from "@/src/actions/admin";
 
 // --- Types ---
 interface Theater {
@@ -114,13 +115,29 @@ function TheaterModal({
 export default function TheatersPage() {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [filterCity, setFilterCity] = useState("All");
-  const [theaters, setTheaters] = useState<Theater[]>(MOCK_THEATERS);
+  const [theaters, setTheaters] = useState<Theater[]>([]);
 
   const handleSave = (newTheater: Omit<Theater, "id">) => {
-    const theaterWithId = { ...newTheater, id: Math.random().toString() };
-    setTheaters([...theaters, theaterWithId]);
+    
+    // const theaterWithId = { ...newTheater, id: Math.random().toString() };
+    // setTheaters([...theaters, theaterWithId]);
+    addTheater(newTheater)
+    .then(()=>getAllTheater().then((data)=>setTheaters(data)))
+    
+    
     setIsModalOpen(false);
   };
+
+  useEffect(() => {
+    getAllTheater().then(data => setTheaters(data))
+    // getAllTheater().then(data => setTheaters(data)
+    
+  }, [])
+
+  const handleDetele = (theaterId:string) => {
+    deleteTheater(theaterId).then(()=>getAllTheater().then((data)=>setTheaters(data)))
+  }
+  
 
   // Filter Logic
   const filteredTheaters = filterCity === "All" 
@@ -212,12 +229,14 @@ export default function TheatersPage() {
 
                 {/* Actions */}
                 <div className="col-span-1 flex justify-end gap-2 md:opacity-0 md:group-hover:opacity-100 md:transition-opacity">
-                  <button className="text-blue-600 hover:bg-blue-50 p-1.5 rounded transition-colors" title="Edit">
+                  {/* <button className="text-blue-600 hover:bg-blue-50 p-1.5 rounded transition-colors" title="Edit">
                     <Edit2 size={16} />
-                  </button>
-                  <button className="text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors" title="Delete">
+                  </button> */}
+
+                  <button onClick={()=>handleDetele(theater.id)} className="text-red-600 hover:bg-red-50 p-1.5 rounded transition-colors" title="Delete">
                     <Trash2 size={16} />
                   </button>
+
                 </div>
               </div>
             ))

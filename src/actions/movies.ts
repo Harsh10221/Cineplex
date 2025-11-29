@@ -43,6 +43,8 @@ export async function addMovie(data: MovieFormData) {
             }
         })
 
+        
+
         revalidatePath("/admin/movies")
 
         return { success: true, message: "Movie added successfully" }

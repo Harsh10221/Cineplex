@@ -2,10 +2,16 @@ we are on diffrent branch so make rembeber that mate
 
 add validation on frontend in add new movie
 
+
+
+
+Today goal , can add show time 
+
+
 show should be fetched when user is on the screen of the seat selection and the only time should be visible of that day only not other day
 
-
-
+[when edit why the whole list is changing , and the edited gone at last 
+]
 
 
 

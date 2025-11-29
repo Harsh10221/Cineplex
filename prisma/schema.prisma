@@ -100,8 +100,10 @@ model Theater {
   id       String @id @default(uuid())
   location String
   name     String
+  city     String
 
-  total_screens Int
+  total_screens Int @default(1)
+  createdAt DateTime @default(now())
 
   Screen Screen[]
 }
