@@ -60,6 +60,7 @@ model Movie {
   cast        String
   certificate Certificate @default(UA)
   status      MovieStatus @default(UPCOMING)
+  createdAt DateTime @default(now())
 
   Show Show[]
 }

@@ -4,6 +4,11 @@ add validation on frontend in add new movie
 
 show should be fetched when user is on the screen of the seat selection and the only time should be visible of that day only not other day
 
+
+
+
+
+
 [
 user login , and after login user can buy ticket for the show and able to download the pdf of that and when ticket successfully purchased send a email with the pdf or a image somthing
 ]
