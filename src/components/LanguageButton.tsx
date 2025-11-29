@@ -121,7 +121,7 @@ function LanguageModal({ movieData, onClose, onSelect }: any) {
 
             // console.log("item",item)
 
-            <Link key={item.id} href={`/movie/${movieData?.id}/shows?lang=${item}`}  >
+            <Link key={item} href={`/movie/${movieData?.id}/shows?lang=${item}`}  >
               <LanguageOption
                 label={item}
               />

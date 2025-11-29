@@ -1,6 +1,9 @@
 "use client"
 import React, { useState } from 'react';
 import { ChevronLeftIcon, ExclamationCircleIcon, TicketIcon, CalendarIcon, ClockIcon } from '@heroicons/react/24/outline';
+import { useParams, usePathname, useSearchParams } from 'next/navigation';
+import path from 'path';
+import Link from 'next/link';
 
 // --- TYPES ---
 type SeatStatus = 0 | 1 | 2; // 0: Gap, 1: Available, 2: Occupied
@@ -29,10 +32,26 @@ export default function SeatSelectionPage() {
 
     const ticketPrice = 400;
 
-    // console.log("This is selected",selectedSeats)
+    // console.log("Hello from seatselect", window.location.href)
 
-    const toggleSeat = ( seatId: string) => {
-    // const toggleSeat = (rowLabel: string, seatIndex: number, seatId: string) => {
+    const backWardUrlConstructor = () => {
+        const movieId = useParams().movieid
+        const currectQuery = useSearchParams()
+        const lang = currectQuery.get("lang")
+        
+        // const params = new URLSearchParams()
+        // params.set("lang", lang ?? "")
+        // params.set("showId", showid)
+        // console.log("this is param",movieId)
+        // console.log(`final url : /movie/${movieId}/shows?lang=${lang} `)
+        return `/movie/${movieId}/shows?lang=${lang}`
+    }
+
+    backWardUrlConstructor()
+
+    const toggleSeat = (seatId: string) => {
+
+        // const toggleSeat = (rowLabel: string, seatIndex: number, seatId: string) => {
         // console.log("rowlabel",rowLabel)
         // console.log("seatIndex",seatIndex)
         // console.log("seatIndex",seatId)
@@ -55,7 +74,7 @@ export default function SeatSelectionPage() {
 
     return (
         <div className='min-h-screen bg-[#0f172a] text-white font-sans flex flex-col'>
-            
+
             {/* --- GLOBAL ALERT --- */}
             <div className={`fixed top-24 lg:top-6 left-1/2 transform -translate-x-1/2 z-[100] transition-all duration-300 pointer-events-none
                 ${showMaxSeatAlert ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
@@ -67,17 +86,20 @@ export default function SeatSelectionPage() {
 
             {/* --- LAYOUT WRAPPER --- */}
             <div className="flex flex-col lg:flex-row max-w-7xl mx-auto w-full flex-1">
-                
+
                 {/* LEFT CONTENT */}
                 <div className="flex-1 flex flex-col relative z-10">
-                    
+
                     {/* MOBILE HEADER (Restored Original Look) */}
                     <div className="sticky lg:hidden top-0 z-50 bg-[#1a1a2e]/95 backdrop-blur-md border-b border-white/10 shadow-xl pb-4 pt-4 px-4 w-full">
-                         <div className="flex items-center justify-between mb-4">
+                        <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
-                                <button className="p-2 rounded-full hover:bg-white/10 transition-colors">
+                                <Link href={backWardUrlConstructor()}>
+                                <button className="p-2  rounded-full hover:bg-white/10 transition-colors">
                                     <ChevronLeftIcon className="w-6 h-6 text-white" />
                                 </button>
+                                </Link>
+
                                 <div>
                                     <h1 className="text-lg font-bold text-white leading-tight">Kantara: Chapter 1</h1>
                                     <p className="text-xs text-gray-400">Eros Cinema • 11:00 PM</p>
@@ -99,13 +121,16 @@ export default function SeatSelectionPage() {
 
                     {/* DESKTOP HEADER (Back Button) */}
                     <div className="hidden lg:flex p-6 items-center gap-2 text-gray-400 hover:text-white cursor-pointer w-fit">
+                    <Link href={backWardUrlConstructor()}>
                         <ChevronLeftIcon className="w-5 h-5" />
+                    </Link>
+                        
                         <span>Back to movies</span>
                     </div>
 
                     {/* MAIN GRID */}
                     <main className="flex-1 flex flex-col items-center justify-center p-2 py-8 lg:p-8 overflow-y-auto">
-                         {/* Price Tag (Mobile Style) */}
+                        {/* Price Tag (Mobile Style) */}
                         <div className="text-center mb-6 lg:hidden">
                             <span className="inline-block px-4 py-1 rounded-full border border-gray-600 text-gray-400 text-[10px] font-medium tracking-widest uppercase">
                                 Classic : ₹ 400.00
@@ -114,7 +139,7 @@ export default function SeatSelectionPage() {
 
                         {/* SCREEN */}
                         <div className="w-full max-w-[300px] lg:max-w-2xl mb-8 lg:mb-12 flex flex-col items-center perspective-container">
-                             <div className="w-full h-6 lg:h-8 bg-gradient-to-b from-purple-500/20 to-transparent border-t border-purple-500/40 transform perspective-500 rotate-x-12 opacity-50 blur-[1px]"></div>
+                            <div className="w-full h-6 lg:h-8 bg-gradient-to-b from-purple-500/20 to-transparent border-t border-purple-500/40 transform perspective-500 rotate-x-12 opacity-50 blur-[1px]"></div>
                             <p className="text-gray-500 text-[9px] uppercase tracking-widest mt-2">Screen this way</p>
                         </div>
 
@@ -125,13 +150,13 @@ export default function SeatSelectionPage() {
                                 return (
                                     <div key={row.row} className="flex items-center justify-center gap-2 lg:gap-6">
                                         <div className="w-3 lg:w-5 text-center text-gray-500 text-[10px] lg:text-xs font-bold">{row.row}</div>
-                                        
+
                                         {/* Mobile: gap-1, Desktop: gap-3 */}
                                         <div className="flex gap-1 lg:gap-3">
                                             {row.seats.map((status, idx) => {
                                                 // Mobile Gap: w-3, Desktop Gap: w-10
                                                 if (status === 0) return <div key={`gap-${idx}`} className="w-3 lg:w-10" />;
-                                                
+
                                                 seatCounter++;
                                                 const seatId = `${row.row}${seatCounter}`;
                                                 // console.log("This is seatid",seatId)
@@ -152,10 +177,10 @@ export default function SeatSelectionPage() {
                                                             
                                                             font-medium flex items-center justify-center 
                                                             transition-all duration-200
-                                                            ${isOccupied 
-                                                                ? 'bg-gray-700 text-gray-500 cursor-not-allowed border border-transparent' 
-                                                                : isSelected 
-                                                                    ? 'bg-red-600 text-white shadow-lg shadow-red-600/50 border border-red-500 transform scale-110' 
+                                                            ${isOccupied
+                                                                ? 'bg-gray-700 text-gray-500 cursor-not-allowed border border-transparent'
+                                                                : isSelected
+                                                                    ? 'bg-red-600 text-white shadow-lg shadow-red-600/50 border border-red-500 transform scale-110'
                                                                     : 'bg-transparent border border-gray-600 text-gray-300 hover:border-white hover:bg-white/10'
                                                             }
                                                         `}
@@ -220,7 +245,7 @@ export default function SeatSelectionPage() {
                                 <span className="text-3xl font-bold text-white">₹ {selectedSeats.length * ticketPrice}</span>
                             </div>
                         </div>
-                        <button 
+                        <button
                             disabled={selectedSeats.length === 0}
                             className="w-full bg-red-600 hover:bg-red-700 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95"
                         >
@@ -231,13 +256,13 @@ export default function SeatSelectionPage() {
 
                 {/* MOBILE FLOATING ACTION BUTTON (Restored from your original) */}
                 {/* {selectedSeats.length > 0 && ( */}
-                    <div className={`${selectedSeats.length > 0 ? "translate-y-0": "translate-y-100"} transition-transform duration-500  fixed lg:hidden bottom-0 left-0 w-full p-4 bg-[#1a1a2e] border-t border-white/10 animate-in slide-in-from-bottom  z-60`}>
-                        <div className="w-full flex items-center justify-between gap-4">
-                            <button className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base">
-                                Confirm {selectedSeats.length} Seats
-                            </button>
-                        </div>
+                <div className={`${selectedSeats.length > 0 ? "translate-y-0" : "translate-y-100"} transition-transform duration-500  fixed lg:hidden bottom-0 left-0 w-full p-4 bg-[#1a1a2e] border-t border-white/10 animate-in slide-in-from-bottom  z-60`}>
+                    <div className="w-full flex items-center justify-between gap-4">
+                        <button className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base">
+                            Confirm {selectedSeats.length} Seats
+                        </button>
                     </div>
+                </div>
                 {/* )} */}
 
             </div>

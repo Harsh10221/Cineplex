@@ -115,6 +115,11 @@ function DateSelector() {
     const [theaters, setTheaters] = useState<any[]>([])
     let formatedTime
     let url
+    const currectQuery = useSearchParams()
+    const pathName = usePathname()
+
+    // const currectQuery = useSearchParams()
+
     // console.log("theaters", theaters)
 
     const { isPending, data: movieData, isError } = useQuery({
@@ -125,26 +130,34 @@ function DateSelector() {
 
     const movieId = useParams()?.movieid
     // const fullUrl = window.location.href
+    // console.log("cuurrent query",useSearchParams().get("lang"))
 
     const urlConstructor = (showid: string) => {
-        // fullUrl
-        // const arr = fullUrl.split("?")
-        // const url = `${arr[0]}/seats`
-        // const querys = `${arr[1]}/`
+
+
+        const lang = currectQuery.get("lang")
+        // console.log("inside urlsonstructor",showid)
+        // const lang = currectQuery.get("")
 
         const params = new URLSearchParams()
-        params.set("lang", "Hindi")
+        params.set("lang", lang ?? "")
         params.set("showId", showid)
 
         const queryString = params.toString()
 
-        const pathName = usePathname()
         const fullUrl = `${pathName}/seats?${queryString}`
 
-        console.log(fullUrl)
+        // console.log(fullUrl)
 
         return fullUrl
     }
+
+    // const backWardUrlConstructor = () => {
+        
+
+
+    // }
+
 
 
     // console.log(fullUrl)
@@ -350,7 +363,7 @@ function DateSelector() {
 
                             {/* Show Times */}
                             <div className="flex flex-wrap gap-3 flex-1 justify-start md:justify-start">
-                                {theater?.shows?.map((time, Index) => {
+                                {theater?.shows?.map((time: any, Index: any) => {
 
                                     {
                                         // console.log("Inside form the map function",time)
