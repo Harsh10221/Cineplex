@@ -5,7 +5,9 @@ add validation on frontend in add new movie
 
 
 
-Today goal , can add show time 
+Today goal , can add show time{
+    Need to show date , and can remove the show , if want then can edit 
+}
 
 
 show should be fetched when user is on the screen of the seat selection and the only time should be visible of that day only not other day

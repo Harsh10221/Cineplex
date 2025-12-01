@@ -43,7 +43,7 @@ export async function addMovie(data: MovieFormData) {
             }
         })
 
-        
+
 
         revalidatePath("/admin/movies")
 
@@ -73,8 +73,12 @@ export async function getAllMovies() {
     //    return {}
 }
 
-export async function getShow(movieId: string) {
-    console.log("movieid", movieId)
+export async function getShow(movieId: string, date: any) {
+    console.log("MovieId", movieId)
+    console.log("Date", date)
+
+    const start = new Date(date)
+    const end = new Date(new Date(date).setHours(23, 59, 59, 999))
 
     if (!movieId) {
         throw new Error("Movie id not required ")
@@ -82,14 +86,21 @@ export async function getShow(movieId: string) {
 
     const result = await db.show.findMany({
         where: {
-            movieId: movieId
+            movieId: movieId,
+            startTime: {
+                gte: start,
+                lt: end
+            }
+
+
         },
         include: {
-            screen: {
-                include: {
-                    theater: true
-                }
-            }
+            theater: true
+            // screen: {
+            //     include: {
+            //         theater: true
+            //     }
+            // }
 
         }
     })
@@ -101,26 +112,27 @@ export async function getShow(movieId: string) {
 
         // console.log("this is show", show)
 
-        const theaterName = show.screen.theater.name
+        const theaterName = show?.theater?.name
+        // console.log("this is show", theaterName)
 
-        if (!acc[theaterName]) {
+        if (!acc[theaterName ?? 0]) {
 
-            acc[theaterName] = {
-                name: show.screen.theater.name,
+            acc[theaterName ?? 0] = {
+                name: show?.theater.name,
                 movieId: show.movieId,
-                location: show.screen.theater.location,
+                location: show?.theater.location,
                 shows: [
-                   
+
                 ]
             }
         }
 
         const obj = {
             startTime: show.startTime,
-            showId : show.id
+            showId: show.id
         }
 
-        acc[theaterName].shows.push(obj)
+        acc[theaterName ?? 0].shows.push(obj)
 
 
 
@@ -132,7 +144,7 @@ export async function getShow(movieId: string) {
     const theaterList = Object.values(formatedData)
     // console.log("This is after values ", theaterList)
 
+    // console.log("This is formateData", formatedData)
     return theaterList
 
-    // console.log("This is formateData", formatedData)
 }

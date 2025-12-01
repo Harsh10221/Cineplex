@@ -2,9 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { Search, Plus, Calendar, MapPin, X, Clock, IndianRupee, Trash2, Edit2, Theater } from "lucide-react";
-import { getAllTheater } from "@/src/actions/admin";
+import { addShowTime, getAllShowTime, getAllTheater, getSpecificeShow } from "@/src/actions/admin";
 import { getAllMovies } from "@/src/actions/movies";
-import { Moirai_One } from "next/font/google";
+import { Inter_Tight, Moirai_One } from "next/font/google";
 
 // --- Types ---
 interface Showtime {
@@ -76,10 +76,12 @@ function ShowtimeModal({
   onSave,
   initialData,
   movieList,
-  theaterList
+  theaterList,
+  handleAddShowTime
 }: {
   isOpen: boolean;
   movieList: any;
+  handleAddShowTime: (data: any) => void;
   theaterList: any;
   onClose: () => void;
   onSave: (data: any) => void;
@@ -91,9 +93,10 @@ function ShowtimeModal({
   const defaultState = {
     movieId: "",
     theaterId: "",
-    time: "",
-    price: "",
-    language: "Hindi"
+    time: Date(),
+    price: Number,
+    language: "",
+    date: Date()
   };
 
   // If editing, map the display data back to form values
@@ -103,9 +106,16 @@ function ShowtimeModal({
         movieId: initialData.movieId,
         theaterId: 0,
         screenId: initialData.screen === "Screen 1" ? "sc1" : "sc2", // Simple logic for demo
-        time: convertTo24Hour(initialData.time),
+        time: new Date(initialData.time).toLocaleTimeString("en-GB"
+          , {
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: true
+          }
+        ),
         price: initialData.price,
-        language: initialData.language
+        language: initialData.language,
+        date: initialData.date
       }
       : defaultState
   );
@@ -113,13 +123,14 @@ function ShowtimeModal({
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     console.log("hello from hnald change", e.target.value)
     setFormData({ ...formData, [e.target.name]: e.target.value });
+    console.log("This is set data", formData)
   };
 
   const labelClass = "block text-xs font-bold text-gray-600 uppercase mb-1.5 tracking-wide";
   const inputClass = "w-full border border-gray-200 rounded-lg px-4 py-2.5 text-sm text-gray-900 focus:ring-2 focus:ring-red-500 focus:border-transparent outline-none transition bg-gray-50 focus:bg-white";
 
   return (
-    <div className="fixed  inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm p-4">
       <div className="bg-white rounded-xl shadow-2xl w-full max-w-md animate-in fade-in zoom-in duration-200 overflow-hidden">
 
         {/* Header */}
@@ -143,18 +154,12 @@ function ShowtimeModal({
               className={inputClass}
               onChange={handleChange}
               value={formData.movieId}
-              disabled={!!initialData} // Disable changing movie when editing specific show
+              disabled={!!initialData}
             >
               <option value="">-- Choose Movie --</option>
-              {/* {console.log("movie",movieList
-              )} */}
-
               {movieList?.map((movie: any) => (
-                // console.log("movie",movie.title)
-                <option key={movie.id} value={movie.id}>{movie.title}...</option>
+                <option key={movie.id} value={movie.id}>{movie.title}</option>
               ))}
-              {/* <option value="m2">Interstellar</option> */}
-
             </select>
           </div>
 
@@ -162,27 +167,31 @@ function ShowtimeModal({
           <div>
             <label className={labelClass}>Select Screen</label>
             <select
-              name="theater"
+              name="theaterId"
               className={inputClass}
               onChange={handleChange}
               value={formData?.theaterId}
             >
               {theaterList.map((theater: any) => (
-                // console.log(theater)
-
-                <option key={theater.name} value={Theater.name}>{theater.name}</option>
-
-              ))
-
-              }
-              {/* <option value="sc2">Screen 2 (Gold Class)</option>
-              <option value="IMAX">IMAX</option> */}
-
+                <option key={theater.name} value={theater.id}>{theater.name}</option>
+              ))}
             </select>
           </div>
 
-          {/* Time & Language */}
+          {/* Date & Time Row */}
           <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className={labelClass}>Show Date</label>
+              <input
+                type="date"
+                name="date"
+                className={inputClass}
+                onChange={handleChange}
+                value={formData?.date || ''} // Ensure your state has a 'date' field
+                min={new Date().toISOString().split("T")[0]} // Disable past dates
+              />
+            </div>
+
             <div>
               <label className={labelClass}>Show Time</label>
               <input
@@ -193,7 +202,10 @@ function ShowtimeModal({
                 value={formData.time}
               />
             </div>
+          </div>
 
+          {/* Language & Price Row */}
+          <div className="grid grid-cols-2 gap-4">
             <div>
               <label className={labelClass}>Language</label>
               <select
@@ -202,41 +214,26 @@ function ShowtimeModal({
                 onChange={handleChange}
                 value={formData.language}
               >
-
-                {
-                  movieList?.find((movie:any)=> movie.id === formData.movieId)?.languages?.split(",").map((lang:string)=> {return <option value={lang}>{lang}</option>}
- )
-                }
-                {/* {movieList?.map((movie: any) => {
-                  if (formData.movieId == movie.id) {
-                    const lang = movie.languages.split(",")
-                    lang.map((item: any) => {
-                      console.log(item)
-                      return <option value={item}>{item}</option>
-                    })
-                  }
-                })} */}
-                {/* <option value="English">English</option>
-                <option value="Tamil">Tamil</option> */}
-
-
-
+                <option value="">-- Select --</option>
+                {movieList?.find((movie: any) => movie.id === formData.movieId)?.languages?.split(",").map((lang: string) => (
+                  <option key={lang} value={lang}>{lang}</option>
+                ))}
               </select>
             </div>
 
-          </div>
+            <div>
+              <label className={labelClass}>Ticket Price (₹)</label>
+              
+              <input
+                type="number"
+                name="price"
+                placeholder="e.g. 250"
+                className={inputClass}
+                onChange={handleChange}
+                value={formData.price}
+              />
 
-          {/* Price */}
-          <div>
-            <label className={labelClass}>Ticket Price (₹)</label>
-            <input
-              type="number"
-              name="price"
-              placeholder="e.g. 250"
-              className={inputClass}
-              onChange={handleChange}
-              value={formData.price}
-            />
+            </div>
           </div>
 
         </div>
@@ -246,9 +243,16 @@ function ShowtimeModal({
           <button onClick={onClose} className="px-4 py-2 text-sm font-semibold text-gray-600 bg-white border border-gray-300 rounded-lg hover:bg-gray-50">
             Cancel
           </button>
-          <button onClick={() => onSave(formData)} className="px-6 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-sm">
-            {initialData ? "Save Changes" : "Add Showtime"}
-          </button>
+
+          {initialData ? (
+            <button onClick={() => onSave(formData)} className="px-6 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-sm">
+              Save Changes
+            </button>
+          ) : (
+            <button onClick={() => handleAddShowTime(formData)} className="px-6 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 shadow-sm">
+              Add Showtime
+            </button>
+          )}
         </div>
       </div>
     </div>
@@ -261,11 +265,29 @@ export default function ShowtimesPage() {
   const [theaterList, setTheaterList] = useState<any[]>([])
   const [movieList, setMovieList] = useState<any>(null)
   const [selectedTheater, setSelectedTheater] = useState(theaterList[0]?.id);
+  const [availableShowList, setAvailableShowList] = useState<any[]>([])
 
-  // console.log("this is movielist",movieList)
   // Modal State
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingShowtime, setEditingShowtime] = useState<any>(null);
+
+  console.log("This is selected theater", selectedTheater)
+
+  // useEffect(() => {
+  //   getAllShowTime().then((data) => setAvailableShowList(data))
+  //   // getAllShowTime().then((data)=>setAvailableShowList(data))
+
+  // }, [])
+
+  const handleGetShowOfDate = () => {
+    console.log("This is selected date", selectedDate)
+
+    getSpecificeShow(selectedDate, selectedTheater).then(data => setAvailableShowList(data))
+
+
+
+  }
+
 
   const handleAddClick = () => {
     setEditingShowtime(null); // Clear edit state
@@ -280,6 +302,12 @@ export default function ShowtimesPage() {
     });
     setIsModalOpen(true);
   };
+
+  const handleAddShowTime = (formData: any) => {
+    console.log("this is from data from function", formData)
+    addShowTime(formData).then(data => data).then(() => setIsModalOpen(false))
+
+  }
 
   useEffect(() => {
     getAllTheater().then(data => setTheaterList(data))
@@ -335,7 +363,6 @@ export default function ShowtimesPage() {
             </div>
           </div>
 
-          {/* Date Picker */}
           <div className="w-full">
             <label className="block text-xs font-bold text-gray-500 uppercase mb-1.5">Date</label>
             <div className="relative">
@@ -343,6 +370,7 @@ export default function ShowtimesPage() {
                 type="date"
                 value={selectedDate}
                 onChange={(e) => setSelectedDate(e.target.value)}
+                min={new Date().toISOString().split("T")[0]} // Disable past dates
                 className="w-full pl-4 pr-4 py-2.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-900 focus:ring-2 focus:ring-red-500 outline-none"
               />
             </div>
@@ -350,12 +378,14 @@ export default function ShowtimesPage() {
 
           {/* Actions */}
           <div className="flex gap-2">
-            <button className="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition shadow-sm">
+
+            <button onClick={handleGetShowOfDate} className="flex-1 bg-blue-600 text-white px-4 py-2.5 rounded-lg text-sm font-semibold hover:bg-blue-700 transition shadow-sm">
               Apply
             </button>
             <button className="px-4 py-2.5 border border-gray-300 text-gray-600 rounded-lg text-sm font-semibold hover:bg-gray-50 transition">
               Clear
             </button>
+
           </div>
         </div>
       </div>
@@ -369,70 +399,112 @@ export default function ShowtimesPage() {
         Add New Showtime
       </button>
 
-      {/* --- MOVIE LISTING GRID --- */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {MOCK_MOVIES.map((movie) => (
-          <div key={movie.id} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
 
-            {/* Movie Poster Header */}
-            <div className="relative h-48 bg-gray-100">
-              <img src={movie.posterUrl} alt={movie.title} className="w-full h-full object-cover" />
-              <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent flex items-end p-4">
-                <h3 className="text-white font-bold text-lg leading-tight">{movie.title}</h3>
+        {availableShowList.length == 0 ?
+          <div className="w-full flex flex-col items-center justify-center py-12 px-6 text-center bg-slate-100 border border-slate-200 rounded-2xl shadow-sm">
+
+            {/* 1. Icon Circle (Slightly darker slate) */}
+            <div className="w-16 h-16 bg-white rounded-full flex items-center justify-center mb-4 shadow-sm ring-1 ring-slate-200">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-8 w-8 text-slate-400"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+
+            {/* 2. Text (Dark Slate for Contrast) */}
+            <h3 className="text-lg font-bold text-slate-800 mb-1">
+              No Shows Found
+            </h3>
+
+            <p className="text-slate-500 text-sm max-w-xs leading-relaxed mb-6">
+              No showtimes are scheduled for this date.
+            </p>
+
+            {/* 3. Button (Subtle Outline) */}
+            {/* <button className="px-5 py-2 bg-white border border-slate-300 text-slate-700 font-medium rounded-lg hover:bg-slate-50 hover:border-slate-400 transition-colors text-sm shadow-sm">
+              Change Date
+            </button> */}
+
+          </div>
+
+          : availableShowList?.map((movie) => {
+
+
+            return <div key={movie.showId} className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
+
+              <div className="relative h-48 bg-gray-100">
+                <img src={movie?.movie?.posterUrl} alt={movie?.movie?.title} className="w-full h-full object-cover" />
+                <div className="absolute inset-0 bg-linear-to-t from-black/80 to-transparent flex items-end p-4">
+                  <h3 className="text-white font-bold text-lg leading-tight">{movie?.movie?.title}</h3>
+                </div>
+              </div>
+
+              <div className="p-4 space-y-3">
+                {movie?.shows?.length === 0 ? (
+                  <p className="text-sm text-gray-400 italic">No shows scheduled.</p>
+                ) : (
+
+                  movie?.shows?.map((show: any) => {
+
+                    return <div key={show.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-gray-100 hover:border-red-200 transition group">
+
+                      <div className="flex items-center gap-3">
+                        <div className="bg-white p-2 rounded-md shadow-sm text-red-600 border border-gray-100">
+                          <Clock size={16} />
+                        </div>
+                        <div>
+                          <p className="text-sm font-bold text-gray-900">{show.startTime.toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                            hour12: true
+
+                          })}</p>
+                          {/* {console.log("This is time",show.startTime.to())} */}
+                          <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">{show.language} • {show.theater.name}</p>
+                        </div>
+                      </div>
+
+                      <div className="text-right flex flex-col items-end gap-1">
+                        <p className="text-sm font-bold text-gray-900 flex items-center justify-end">
+                          <IndianRupee size={12} className="mr-0.5" />
+                          {show.price}
+                        </p>
+                        <div className="flex items-center gap-2  group-hover:opacity-100 transition-opacity">
+                          <button
+                            onClick={() => handleEditClick(movie, show)}
+                            className="text-blue-600 hover:bg-blue-50 p-1 rounded transition-colors"
+                            title="Edit"
+                          >
+                            <Edit2 size={14} />
+                          </button>
+                          <button
+                            onClick={() => handleDeleteClick(show.id)}
+                            className="text-red-600 hover:bg-red-50 p-1 rounded transition-colors"
+                            title="Delete"
+                          >
+                            <Trash2 size={14} />
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  })
+
+                )}
               </div>
             </div>
 
-            {/* Showtimes List */}
-            <div className="p-4 space-y-3">
-              {movie.shows.length === 0 ? (
-                <p className="text-sm text-gray-400 italic">No shows scheduled.</p>
-              ) : (
-                movie.shows.map((show) => (
-                  <div key={show.id} className="flex items-center justify-between p-3 rounded-lg bg-gray-50 border border-gray-100 hover:border-red-200 transition group">
+          })}
 
-                    {/* Time & Language */}
-                    <div className="flex items-center gap-3">
-                      <div className="bg-white p-2 rounded-md shadow-sm text-red-600 border border-gray-100">
-                        <Clock size={16} />
-                      </div>
-                      <div>
-                        <p className="text-sm font-bold text-gray-900">{show.time}</p>
-                        <p className="text-[10px] font-medium text-gray-500 uppercase tracking-wide">{show.language} • {show.screen}</p>
-                      </div>
-                    </div>
-
-                    {/* Price & Actions */}
-                    <div className="text-right flex flex-col items-end gap-1">
-                      <p className="text-sm font-bold text-gray-900 flex items-center justify-end">
-                        <IndianRupee size={12} className="mr-0.5" />
-                        {show.price}
-                      </p>
-                      <div className="flex items-center gap-2  group-hover:opacity-100 transition-opacity">
-                        <button
-                          onClick={() => handleEditClick(movie, show)}
-                          className="text-blue-600 hover:bg-blue-50 p-1 rounded transition-colors"
-                          title="Edit"
-                        >
-                          <Edit2 size={14} />
-                        </button>
-                        <button
-                          onClick={() => handleDeleteClick(show.id)}
-                          className="text-red-600 hover:bg-red-50 p-1 rounded transition-colors"
-                          title="Delete"
-                        >
-                          <Trash2 size={14} />
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-        ))}
       </div>
 
-      {/* --- MODAL --- */}
+
       <ShowtimeModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
@@ -440,6 +512,7 @@ export default function ShowtimesPage() {
         initialData={editingShowtime}
         movieList={movieList}
         theaterList={theaterList}
+        handleAddShowTime={handleAddShowTime}
       />
 
     </div>
