@@ -4,6 +4,7 @@ import { ChevronLeftIcon, ExclamationCircleIcon, TicketIcon, CalendarIcon, Clock
 import { useParams, usePathname, useSearchParams } from 'next/navigation';
 import path from 'path';
 import Link from 'next/link';
+import { bookSeats } from '@/src/actions/movies';
 
 // --- TYPES ---
 type SeatStatus = 0 | 1 | 2; // 0: Gap, 1: Available, 2: Occupied
@@ -27,18 +28,23 @@ const SEAT_LAYOUT: SeatRow[] = [
 
 export default function SeatSelectionPage() {
     const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
-    const [occupiedSeats] = useState<string[]>(["H1", "C1", "D2", "H10"]);
+    const [occupiedSeats] = useState<string[]>([]);
+    // const [occupiedSeats] = useState<string[]>(["H1", "C1", "D2", "H10"]);
     const [showMaxSeatAlert, setShowMaxSeatAlert] = useState(false);
 
     const ticketPrice = 400;
 
     // console.log("Hello from seatselect", window.location.href)
 
+    const handleBookSeats = () => {
+        bookSeats(selectedSeats)
+    }
+
     const backWardUrlConstructor = () => {
         const movieId = useParams().movieid
         const currectQuery = useSearchParams()
         const lang = currectQuery.get("lang")
-        
+
         // const params = new URLSearchParams()
         // params.set("lang", lang ?? "")
         // params.set("showId", showid)
@@ -95,9 +101,9 @@ export default function SeatSelectionPage() {
                         <div className="flex items-center justify-between mb-4">
                             <div className="flex items-center gap-3">
                                 <Link href={backWardUrlConstructor()}>
-                                <button className="p-2  rounded-full hover:bg-white/10 transition-colors">
-                                    <ChevronLeftIcon className="w-6 h-6 text-white" />
-                                </button>
+                                    <button className="p-2  rounded-full hover:bg-white/10 transition-colors">
+                                        <ChevronLeftIcon className="w-6 h-6 text-white" />
+                                    </button>
                                 </Link>
 
                                 <div>
@@ -121,10 +127,10 @@ export default function SeatSelectionPage() {
 
                     {/* DESKTOP HEADER (Back Button) */}
                     <div className="hidden lg:flex p-6 items-center gap-2 text-gray-400 hover:text-white cursor-pointer w-fit">
-                    <Link href={backWardUrlConstructor()}>
-                        <ChevronLeftIcon className="w-5 h-5" />
-                    </Link>
-                        
+                        <Link href={backWardUrlConstructor()}>
+                            <ChevronLeftIcon className="w-5 h-5" />
+                        </Link>
+
                         <span>Back to movies</span>
                     </div>
 
@@ -258,7 +264,7 @@ export default function SeatSelectionPage() {
                 {/* {selectedSeats.length > 0 && ( */}
                 <div className={`${selectedSeats.length > 0 ? "translate-y-0" : "translate-y-100"} transition-transform duration-500  fixed lg:hidden bottom-0 left-0 w-full p-4 bg-[#1a1a2e] border-t border-white/10 animate-in slide-in-from-bottom  z-60`}>
                     <div className="w-full flex items-center justify-between gap-4">
-                        <button className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base">
+                        <button onClick={handleBookSeats}  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base">
                             Confirm {selectedSeats.length} Seats
                         </button>
                     </div>

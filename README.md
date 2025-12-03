@@ -10,6 +10,11 @@ Today goal , can add show time{
 }
 
 
+{
+    edge is like a maching for running middleware why it shortend out time by giving the response about the user authorazation . a user made a request /profile request goes to the closest cdn/edge (run time enviroment) and then if passes then the control will be passes to the other or response will be send from the server  
+}
+
+
 show should be fetched when user is on the screen of the seat selection and the only time should be visible of that day only not other day
 
 [when edit why the whole list is changing , and the edited gone at last 

@@ -8,11 +8,12 @@ datasource db {
 }
 
 model User {
-  id       String @id @default(uuid())
-  userName String @unique
-  fullName String
-  email    String @unique
-  password String
+  id           String  @id @default(uuid())
+  // userName String @unique
+  fullName     String
+  email        String  @unique
+  password     String
+  refreshToken String?
 
   bookings Booking[]
 }
@@ -66,15 +67,14 @@ model Show {
   id        String   @id @default(uuid())
   startTime DateTime
 
-
   movieId String
   movie   Movie  @relation(fields: [movieId], references: [id])
 
   screenId String?
-  screen Screen? @relation(fields: [screenId],references: [id])
+  screen   Screen? @relation(fields: [screenId], references: [id])
 
   theaterId String
-  theater Theater @relation(fields: [theaterId],references: [id])
+  theater   Theater @relation(fields: [theaterId], references: [id])
 
   language String
 
@@ -94,8 +94,7 @@ model Screen {
   rows    Int
   columns Int
 
-    Show Show[]
-
+  Show Show[]
 }
 
 model Theater {
@@ -108,6 +107,5 @@ model Theater {
   createdAt     DateTime @default(now())
 
   Screen Screen[]
-  Show Show[]
-
+  Show   Show[]
 }

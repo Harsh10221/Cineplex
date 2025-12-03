@@ -21,7 +21,7 @@ function NavBar() {
   return (
     <div className="w-full max-w-7xl mx-auto flex items-center justify-between py-2 sm:py-3 px-2 sm:px-6 lg:px-8">
       <a href="/">
-        <div className="bg-gradient-to-br from-red-600 to-red-700 shadow-lg shadow-red-900/50 rounded-full h-10 w-10 lg:h-12 lg:w-12 flex items-center justify-center shrink-0 border border-white/10 transition-transform hover:scale-105">
+        <div className="bg-linear-to-br from-red-600 to-red-700 shadow-lg shadow-red-900/50 rounded-full h-10 w-10 lg:h-12 lg:w-12 flex items-center justify-center shrink-0 border border-white/10 transition-transform hover:scale-105">
           <span className="text-white text-[10px] lg:text-xs font-extrabold leading-tight text-center tracking-tighter">
             SHOW
             <br />
@@ -156,15 +156,19 @@ function DateSelector() {
   const currectQuery = useSearchParams();
   const pathName = usePathname();
 
+  // console.log("This is theater", theaters.length == 0)
 
-    useEffect(() => {
+  // console.log("This is selected language", currectQuery.get("lang"))
+
+
+  useEffect(() => {
     async function fetchShows() {
       if (!movieId) return console.log("no movie id");
 
       // console.log("inside useEffect");
-    //   console.log("Test",dates[selectedIndex].fullDate)
-      const shows = await getShow(movieId.toString(),dates[selectedIndex]?.fullDate);
-    //   const shows = await getShow(movieId.toString(),dates[selectedIndex].fullDate);
+      //   console.log("Test",dates[selectedIndex].fullDate)
+      const shows = await getShow(movieId.toString(), dates[selectedIndex]?.fullDate, currectQuery.get("lang") ?? "").catch((err) => { console.error("Error while getting show", err); return [] })
+      //   const shows = await getShow(movieId.toString(),dates[selectedIndex].fullDate);
       // console.log("shows", shows);
       setTheaters(shows);
     }
@@ -173,9 +177,9 @@ function DateSelector() {
   }, [dates[selectedIndex]]);
   // const currectQuery = useSearchParams()
 
-//   console.log("theaters", theaters)
+  //   console.log("theaters", theaters)
 
-// console.log("This is selected date",dates[selectedIndex])
+  // console.log("This is selected date",dates[selectedIndex])
 
   const {
     isPending,
@@ -275,14 +279,16 @@ function DateSelector() {
             <div className="flex flex-wrap items-center gap-x-4 gap-y-3 text-sm md:text-base text-gray-300 font-medium">
               {/* Certificate Badge */}
               <span className="px-2 py-0.5 rounded-md border border-gray-500 text-gray-300 text-xs font-bold tracking-wider uppercase bg-white/5">
-                U/A
+                {/* U/A */}
+                {matchedData?.certificate  }
+                {/* {console.log("This is certificate",matchedData?.certificate)} */}
               </span>
 
               {/* Separator */}
               <span className="hidden sm:inline-block text-gray-600">•</span>
 
               {/* Languages */}
-              <span className="text-gray-300">{matchedData?.languages}</span>
+              <span className="text-gray-300">{currectQuery?.get("lang")}</span>
 
               {/* Separator (Hide on mobile if wrapping) */}
               <span className="hidden sm:inline-block text-gray-600">•</span>
@@ -335,26 +341,23 @@ function DateSelector() {
                                         min-w-18 h-20
                                         rounded-xl
                                         border transition-all duration-300
-                                        ${
-                                          isSelected
-                                            ? "bg-red-600 border-red-500 shadow-lg shadow-red-600/30 scale-105"
-                                            : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30 text-gray-300 hover:text-white"
-                                        }
+                                        ${isSelected
+                      ? "bg-red-600 border-red-500 shadow-lg shadow-red-600/30 scale-105"
+                      : "bg-white/5 border-white/10 hover:bg-white/10 hover:border-white/30 text-gray-300 hover:text-white"
+                    }
                                     `}
                 >
                   {/* DAY NAME (Wed) on Top */}
                   <span
-                    className={`text-xs font-medium uppercase mb-1 block ${
-                      isSelected ? "text-red-100" : ""
-                    }`}
+                    className={`text-xs font-medium uppercase mb-1 block ${isSelected ? "text-red-100" : ""
+                      }`}
                   >
                     {item.dayName.slice(0, 3)}
                   </span>
                   {/* DATE NUMBER (26) on Bottom - Added explicit text-gray-300 for unselected */}
                   <span
-                    className={`text-xl font-bold block ${
-                      isSelected ? "text-white" : "text-gray-200"
-                    }`}
+                    className={`text-xl font-bold block ${isSelected ? "text-white" : "text-gray-200"
+                      }`}
                   >
                     {item.dayNumber}
                   </span>
@@ -366,44 +369,87 @@ function DateSelector() {
 
         {/* 4. THEATER LIST */}
         {/* {console.log("This is just test", theaters[0])} */}
-        <div className="space-y-4">
-          {theaters?.map((theater) => {
-            // console.log(theaters)
-          return  <div
-              key={uuidv4()}
-              className="group bg-[#1f2937]/50 backdrop-blur-sm border border-white/5 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 flex flex-col md:flex-row md:items-center gap-6"
+
+        {/* {theaters.length == 0 ? (
+          <div><h2>hello</h2></div>
+        ) : */}
+        {/* ( */}
+
+        {theaters.length == 0 ? (
+          <div className="w-full flex flex-col items-center justify-center py-20 px-4 text-center rounded-3xl bg-[#1f2937]/30 border border-white/5 backdrop-blur-sm animate-in fade-in zoom-in duration-300">
+
+            {/* 1. Icon Circle */}
+            <div className="w-20 h-20 bg-white/5 rounded-full flex items-center justify-center mb-6 ring-1 ring-white/10 shadow-lg shadow-black/20">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-10 w-10 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={1.5}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+              </svg>
+            </div>
+
+            {/* 2. Main Message */}
+            <h3 className="text-xl font-bold text-white mb-2 tracking-wide">
+              No Shows Available
+            </h3>
+
+            {/* 3. Subtext */}
+            <p className="text-gray-400 text-sm max-w-xs leading-relaxed mb-8">
+              We couldn't find any screenings for this date. Please try selecting a different day.
+            </p>
+
+            {/* 4. Action Button (Optional) */}
+            {/* <button
+              onClick={() => setSelectedIndex((prev) => (prev + 1) % 7)} // Just an example action
+              className="px-6 py-2.5 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white text-sm font-medium transition-all duration-200 hover:scale-105 active:scale-95"
             >
-              {/* Theater Info */}
-              <div className="md:w-1/3 shrink-0">
-                <h3 className="font-bold text-white text-lg tracking-wide group-hover:text-red-400 transition-colors mb-1">
-                  {theater.name}
-                </h3>
-                {/* Location - Replacing amenities */}
-                <div className="flex items-start gap-1.5 text-xs text-gray-400 group-hover:text-gray-300 transition-colors">
-                  <MapPinIcon className="w-3.5 h-3.5 mt-0.5 shrink-0" />
-                  <span>{theater.location}</span>
+              Check Next Date
+            </button> */}
+
+          </div>
+        ) :
+          <div className="space-y-4">
+            {theaters?.map((theater) => {
+              // console.log(theaters)
+              return <div
+                key={uuidv4()}
+                className="group bg-[#1f2937]/50 backdrop-blur-sm border border-white/5 rounded-2xl p-6 hover:border-white/20 transition-all duration-300 flex flex-col md:flex-row md:items-center gap-6"
+              >
+                {/* Theater Info */}
+                <div className="md:w-1/3 shrink-0">
+                  <h3 className="font-bold text-white text-lg tracking-wide group-hover:text-red-400 transition-colors mb-1">
+                    {theater.name}
+                  </h3>
+                  {/* Location - Replacing amenities */}
+                  <div className="flex items-start gap-1.5 text-xs text-gray-400 group-hover:text-gray-300 transition-colors">
+                    <MapPinIcon className="w-3.5 h-3.5 mt-0.5 shrink-0" />
+                    <span>{theater.location}</span>
+                  </div>
                 </div>
-              </div>
 
-              {/* Show Times */}
-              <div className="flex flex-wrap gap-3 flex-1 justify-start md:justify-start">
-                {theater?.shows?.map((time: any, Index: any) => {
-                  {
-                    // console.log("Inside form the map function",time)
-                    const date = new Date(time.startTime);
+                {/* Show Times */}
+                <div className="flex flex-wrap gap-3 flex-1 justify-start md:justify-start">
+                  {theater?.shows?.map((time: any, Index: any) => {
+                    {
+                      // console.log("Inside form the map function",time)
+                      const date = new Date(time.startTime);
 
-                    formatedTime = date.toLocaleTimeString("en-IN", {
-                      hour: "2-digit",
-                      minute: "2-digit",
-                    });
+                      formatedTime = date.toLocaleTimeString("en-IN", {
+                        hour: "2-digit",
+                        minute: "2-digit",
+                      });
 
-                    url = urlConstructor(time.showId);
-                  }
+                      url = urlConstructor(time.showId);
+                    }
 
-                  return (
-                    <Link key={Index} href={url}>
-                      <button
-                        className="
+                    return (
+                      <Link key={Index} href={url}>
+                        <button
+                          className="
                                                 px-5 py-2.5 
                                                 rounded-xl 
                                                 border border-green-500/30 
@@ -415,17 +461,20 @@ function DateSelector() {
                                                 transition-all duration-200
                                                 shadow-sm
                                             "
-                      >
-                        {formatedTime}
-                      </button>
-                    </Link>
-                  );
-                  // <div>{time.toLocaleDateString()}</div>
-                })}
+                        >
+                          {formatedTime}
+                        </button>
+                      </Link>
+                    );
+                    // <div>{time.toLocaleDateString()}</div>
+                  })}
+                </div>
               </div>
-            </div>
-          })}
-        </div>
+            })}
+          </div>
+        }
+
+        {/* ) */}
       </main>
 
       {/* Footer */}
