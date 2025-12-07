@@ -1,27 +1,68 @@
 "use client";
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon, EnvelopeIcon, LockClosedIcon, ExclamationCircleIcon } from '@heroicons/react/24/outline';
 import { useForm } from 'react-hook-form';
 import { loginUser } from '@/src/actions/movies';
+import { useRouter } from 'next/navigation';
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [showError, setShowError] = useState(false);
+  const [errorMessage, setErrorMessage] = useState("");
 
   const {
     register,
     handleSubmit,
-    watch,
     formState: { errors },
   } = useForm();
 
+  const router = useRouter();
+
   const handleOnSubmit = (data: any) => {
-    // console.log("data", data)
-    loginUser(data).then(data => data)
-  }
+    loginUser(data)
+      .then((res: any) => {
+        // --- UPDATED LOGIC ---
+        // Your backend returns { message: "..." } on failure.
+        // On success, it returns a user object (which likely won't have a generic 'message' key).
+        
+        if (res?.message) {
+            // Backend returned an error message (User not found / Password incorrect)
+            setErrorMessage(res.message);
+            setShowError(true);
+            setTimeout(() => setShowError(false), 3000);
+            return; 
+        }
+        
+        // Success!
+        console.log("Login Success:", res);
+        localStorage.setItem("userData", JSON.stringify(res));
+        router.push("/");
+      })
+      .catch((err) => {
+        console.error("Network or Server Error:", err);
+        setErrorMessage("Something went wrong. Please try again.");
+        setShowError(true);
+        setTimeout(() => setShowError(false), 3000);
+      });
+  };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center bg-linear-to-b from-[#1a1a2e] via-[#16213e] to-[#0f3460] font-sans p-4 relative overflow-hidden">
+    <div className="min-h-screen w-full flex items-center justify-center bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f3460] font-sans p-4 relative overflow-hidden">
+
+      {/* --- ERROR TOAST --- */}
+      <div 
+          className={`
+              fixed top-10 left-1/2 transform -translate-x-1/2 z-[100]
+              flex items-center gap-2 px-6 py-3 
+              bg-red-600 text-white rounded-full shadow-2xl shadow-black/50
+              transition-all duration-300 ease-out pointer-events-none
+              ${showError ? 'translate-y-0 opacity-100' : '-translate-y-20 opacity-0'}
+          `}
+      >
+          <ExclamationCircleIcon className="w-5 h-5 flex-shrink-0" />
+          <span className="text-xs font-bold tracking-wide whitespace-nowrap">{errorMessage}</span>
+      </div>
 
       {/* Background Decor */}
       <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-purple-600/20 rounded-full blur-[100px] pointer-events-none"></div>
@@ -32,7 +73,7 @@ export default function LoginPage() {
 
         {/* Logo Section */}
         <div className="flex flex-col items-center mb-8">
-          <div className="bg-linear-to-br from-red-600 to-red-700 shadow-lg shadow-red-900/50 rounded-full h-16 w-16 flex items-center justify-center border border-white/10 mb-4 transform transition-transform hover:scale-105">
+          <div className="bg-gradient-to-br from-red-600 to-red-700 shadow-lg shadow-red-900/50 rounded-full h-16 w-16 flex items-center justify-center border border-white/10 mb-4 transform transition-transform hover:scale-105">
             <span className="text-white text-xs font-extrabold leading-tight text-center tracking-tighter">
               SHOW<br />TIME
             </span>

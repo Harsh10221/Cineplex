@@ -18,6 +18,11 @@ model User {
   bookings Booking[]
 }
 
+enum BookingStatus {
+  PENDING
+  CONFIRM
+}
+
 model Booking {
   id String @id @default(uuid())
 
@@ -26,6 +31,8 @@ model Booking {
 
   showId String
   show   Show   @relation(fields: [showId], references: [id])
+
+  status BookingStatus
 
   row        String
   seatNumber Int

@@ -1,10 +1,13 @@
 "use client"
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { ChevronLeftIcon, ExclamationCircleIcon, TicketIcon, CalendarIcon, ClockIcon } from '@heroicons/react/24/outline';
-import { useParams, usePathname, useSearchParams } from 'next/navigation';
-import path from 'path';
+import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
 import Link from 'next/link';
-import { bookSeats } from '@/src/actions/movies';
+// import { bookSeats } from '@/src/actions/movies';
+
+import LoginPromptModal from '@/src/components/LoginPromptModal';
+import { bookedSeats, bookSeats } from '@/src/actions/booking';
+import { createRazorpayOrder } from '@/src/actions/payment';
 
 // --- TYPES ---
 type SeatStatus = 0 | 1 | 2; // 0: Gap, 1: Available, 2: Occupied
@@ -28,17 +31,180 @@ const SEAT_LAYOUT: SeatRow[] = [
 
 export default function SeatSelectionPage() {
     const [selectedSeats, setSelectedSeats] = useState<string[]>([]);
-    const [occupiedSeats] = useState<string[]>([]);
+    const [occupiedSeats, setOccupiedSeats] = useState<string[]>([]);
     // const [occupiedSeats] = useState<string[]>(["H1", "C1", "D2", "H10"]);
     const [showMaxSeatAlert, setShowMaxSeatAlert] = useState(false);
+    // let userData:any
+    // let userData = JSON.parse(localStorage?.getItem("userData")! ?? "")
 
+    const [IsUserLoggedIn, setIsUserLoggedIn] = useState(null)
+
+    const [showLoginModal, setShowLoginModal] = useState(false);
+    const [isBooking, setIsBooking] = useState(false)
+
+    const currentQuery = useSearchParams()
+    const existingUrl = usePathname().toString()
+
+    // console.log("exist", existingUrl)
+    // console.log("this is curerntquery",currentQuery.get("showId"))
     const ticketPrice = 400;
 
-    // console.log("Hello from seatselect", window.location.href)
+    const router = useRouter()
 
-    const handleBookSeats = () => {
-        bookSeats(selectedSeats)
+    const loadRazorpayScript = () => {
+        return new Promise((resolve) => {
+            const script = document.createElement("script");
+            script.src = "https://checkout.razorpay.com/v1/checkout.js";
+            script.onload = () => resolve(true);
+            script.onerror = () => resolve(false);
+            document.body.appendChild(script);
+        });
+    };
+
+    useEffect(() => {
+
+        let userData = JSON.parse(localStorage?.getItem("userData")! ?? "")
+        setIsUserLoggedIn(userData)
+
+
+    }, [])
+
+
+    // console.log("Hello from seatselect", window.location.href)
+    // const handlePayment = async () => {
+    //     setIsBooking(true);
+    //     const amount = selectedSeats.length * ticketPrice;
+
+    //     // 1. Create Order on Server
+    //     const orderData = await createRazorpayOrder(amount);
+
+
+    //     const res = await loadRazorpayScript();
+    //     if (!res) {
+    //         alert("Razorpay SDK failed to load. Are you online?");
+    //         setIsBooking(false);
+    //         return;
+    //     }
+
+
+
+    //     if (!orderData.success) {
+    //         alert("Payment Init Failed");
+    //         setIsBooking(false);
+    //         return;
+    //     }
+
+    //     // 2. Open Razorpay Checkout
+    //     const options = {
+    //         key: orderData.keyId,
+    //         amount: orderData.amount,
+    //         currency: orderData.currency,
+    //         name: "CineBook",
+    //         description: "Movie Ticket Booking",
+    //         order_id: orderData.orderId, // This comes from step 1
+    //         handler: async function (response: any) {
+    //             // 3. Payment Successful! Now verify & book ticket.
+    //             console.log("Payment Success:", response);
+
+    //             // Call your existing createBooking action here
+    //             // const result = await bookSeats({
+    //             //     // userId,
+    //             //     showId,
+    //             //     seats: selectedSeats,
+    //             //     // totalPrice: amount,
+    //             //     // paymentId: response.razorpay_payment_id // Store this in DB!
+    //             // });
+
+    //             // if (result.success) {
+    //             //     alert("Booking Confirmed!");
+    //             //     setSelectedSeats([]);
+    //             //     router.refresh();
+    //             // } else {
+    //             //     alert("Booking Failed: " + result.message);
+    //             // }
+    //         },
+    //         prefill: {
+    //             name: "User Name", // You can get this from user prop
+    //             email: "user@example.com",
+    //             contact: "9999999999",
+    //         },
+    //         theme: {
+    //             color: "#EF4444", // Red to match your theme
+    //         },
+    //     };
+
+    //     const paymentObject = new (window as any).Razorpay(options);
+    //     paymentObject.open();
+    //     setIsBooking(false);
+    // };
+    // const handleBookSeats = () => {
+    //     bookSeats(selectedSeats)
+
+
+    // }
+
+    const handleNavigateToPaymentWindow = () => {
+
+
+
     }
+
+
+    // useEffect(() => {
+    // userData = JSON.parse(localStorage?.getItem("userData")!)
+    // console.log("from useeffect", userData)
+
+    // }, [])
+    // console.log("outside useefect", userData)
+
+// const id = currentQuery.get("showId")
+//         console.log("outsideo is id", id)
+    useEffect(() => {
+        const id = currentQuery.get("showId")
+        console.log("This is id", id)
+
+        bookedSeats(currentQuery.get("showId") ?? "")
+            .then((data: any) => {  //what if i want this to be put as array so what i need to do ?
+                // console.log("This is data", data)
+                // const arr: any = []
+
+                // Array.isArray(data) ? data : [].map((seat: any) => {
+                //     const row = seat?.row
+                //     const seatNumber = seat?.seatNumber
+                //     const sum = String(row + seatNumber)
+                //     arr.push(sum)
+                //     // console.log("This is seat",sum)
+                // })
+
+                setOccupiedSeats(data)
+            }
+            )
+
+
+    }, [])
+
+    console.log("Occupied seats", occupiedSeats)
+
+    // const handleSubmitSeats = () => {
+    //     // 1. Check if user is logged in
+    //     console.log("hello form handlesubmit")
+    //     if (!IsUserLoggedIn) {
+    //         console.log("userdata", userData)
+    //         setShowLoginModal(true); // <--- Trigger the modal
+    //         return; // Stop execution
+    //     }
+
+    //     bookSeats(selectedSeats, currentQuery ?? "")
+
+    //     // 2. If logged in, proceed with booking
+    //     console.log("this are the seats ", selectedSeats);
+    //     // setOccupiedSeats((prev) => [...prev, ...selectedSeats]);
+    //     // setSelectedSeats([]);
+    // };
+
+
+
+    // console.log(JSON.parse(userData ?? ''))
 
     const backWardUrlConstructor = () => {
         const movieId = useParams().movieid
@@ -47,7 +213,7 @@ export default function SeatSelectionPage() {
 
         // const params = new URLSearchParams()
         // params.set("lang", lang ?? "")
-        // params.set("showId", showid)
+        // params.set("showId", showId)
         // console.log("this is param",movieId)
         // console.log(`final url : /movie/${movieId}/shows?lang=${lang} `)
         return `/movie/${movieId}/shows?lang=${lang}`
@@ -82,7 +248,7 @@ export default function SeatSelectionPage() {
         <div className='min-h-screen bg-[#0f172a] text-white font-sans flex flex-col'>
 
             {/* --- GLOBAL ALERT --- */}
-            <div className={`fixed top-24 lg:top-6 left-1/2 transform -translate-x-1/2 z-[100] transition-all duration-300 pointer-events-none
+            <div className={`fixed top-24 lg:top-6 left-1/2 transform -translate-x-1/2 z-100 transition-all duration-300 pointer-events-none
                 ${showMaxSeatAlert ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
                 <div className="bg-red-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl flex items-center gap-2 border border-red-500/50">
                     <ExclamationCircleIcon className="w-5 h-5" />
@@ -145,7 +311,7 @@ export default function SeatSelectionPage() {
 
                         {/* SCREEN */}
                         <div className="w-full max-w-[300px] lg:max-w-2xl mb-8 lg:mb-12 flex flex-col items-center perspective-container">
-                            <div className="w-full h-6 lg:h-8 bg-gradient-to-b from-purple-500/20 to-transparent border-t border-purple-500/40 transform perspective-500 rotate-x-12 opacity-50 blur-[1px]"></div>
+                            <div className="w-full h-6 lg:h-8 bg-linear-to-b from-purple-500/20 to-transparent border-t border-purple-500/40 transform perspective-500 rotate-x-12 opacity-50 blur-[1px]"></div>
                             <p className="text-gray-500 text-[9px] uppercase tracking-widest mt-2">Screen this way</p>
                         </div>
 
@@ -264,14 +430,30 @@ export default function SeatSelectionPage() {
                 {/* {selectedSeats.length > 0 && ( */}
                 <div className={`${selectedSeats.length > 0 ? "translate-y-0" : "translate-y-100"} transition-transform duration-500  fixed lg:hidden bottom-0 left-0 w-full p-4 bg-[#1a1a2e] border-t border-white/10 animate-in slide-in-from-bottom  z-60`}>
                     <div className="w-full flex items-center justify-between gap-4">
-                        <button onClick={handleBookSeats}  className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base">
+                        {/* http://localhost:3000/movie/a76c099f-21eb-457f-880a-66cc032bd17b/shows/seats?lang=English&showId=8ede61d5-e705-48bb-84a6-68fa11eb250e */}
+                        <Link
+
+                            className="flex-1 text-center bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base"
+                            href={`${existingUrl}/payment?showId=${currentQuery.get("showId")}&lang=${currentQuery.get("lang")}&seats=${selectedSeats.join()}`} >
+                            {/* <button 
+                             className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base"> */}
+                            {/* <button onClick={handleNavigateToPaymentWindow} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base"> */}
+                            {/* <button onClick={handleSubmitSeats} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base"> */}
                             Confirm {selectedSeats.length} Seats
-                        </button>
+                            {/* </button> */}
+                        </Link>
+
                     </div>
                 </div>
                 {/* )} */}
 
             </div>
+
+
+            {showLoginModal && (
+                <LoginPromptModal onClose={() => setShowLoginModal(false)} />
+            )}
+
         </div>
     );
 }

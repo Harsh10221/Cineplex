@@ -6,6 +6,9 @@ import Jwt from "jsonwebtoken"
 import { cookies } from "next/headers";
 import bcrypt from "bcrypt"
 import { collectFallbackRouteParams } from "next/dist/build/segment-config/app/app-segments";
+import { getCurrentUser } from "@/lib/auth";
+import { userAgent } from "next/server";
+import { stat } from "fs";
 
 
 interface MovieFormData {
@@ -23,6 +26,7 @@ interface MovieFormData {
 }
 
 export async function addMovie(data: MovieFormData) {
+
 
     try {
         if (!data.title || !data.posterUrl) {
@@ -63,6 +67,9 @@ export async function addMovie(data: MovieFormData) {
 }
 
 export async function getAllMovies() {
+
+
+
     try {
 
         const result = await db.movie.findMany()
@@ -83,12 +90,13 @@ export async function getShow(movieId: string, date: any, lang: string) {
     // console.log("Date", date)
     // console.log("Lang", lang)
 
-    const start = new Date(date ?? Date())
+    const start = new Date(date ?? new Date() ) 
+    start.setHours(0, 0, 1, 0)
 
     const end = new Date(new Date(date ?? start).setHours(23, 59, 59, 999))
 
-    // console.log("Start", start)
-    // console.log("End", end)
+    console.log("Start", start.toTimeString())
+    console.log("End", end.toTimeString())
 
     if (!movieId) {
         throw new Error("Movie id not required ")
@@ -161,15 +169,14 @@ export async function getShow(movieId: string, date: any, lang: string) {
     // console.log("This is after values ", theaterList)
 
     // console.log("This is formateData", formatedData)
+
     return theaterList
 
 }
 
-export async function bookSeats(data: any) {
-    console.log("This is user data", data)
-
-
-}
+// export async function bookSeats(data: any) {
+//     console.log("This is user data", data)
+// }
 
 export async function registerUser(data: any) {
     try {
@@ -242,6 +249,12 @@ export async function loginUser(data: any) {
         where: {
             email: data.email,
             // password: data.password
+        },
+        select: {
+            id: true,
+            email: true,
+            fullName: true,
+            password: true
         }
     })
 
@@ -249,8 +262,8 @@ export async function loginUser(data: any) {
         return { message: "User Not found" }
     }
 
-    const isPasswordCorrect = bcrypt.compare(data.password, user.password)
-    // console.log("This is password status",isPasswordCorrect)
+    const isPasswordCorrect = await bcrypt.compare(data.password, user.password)
+    console.log("This is password status", isPasswordCorrect)
 
     if (!isPasswordCorrect) {
         return { message: "Password is incorrect" }
@@ -286,8 +299,18 @@ export async function loginUser(data: any) {
     });
 
 
-    return { message: "User logged in successfully" }
-
     // console.log("This is user", user)
+
+
+
+    // if (user) {
+
+    const { password, ...userObj } = user
+
+    // delete user?.refreshToken
+    // }
+    // console.log(password)
+
+    return userObj
 
 }

@@ -194,14 +194,14 @@ function DateSelector() {
   // const fullUrl = window.location.href
   // console.log("cuurrent query",useSearchParams().get("lang"))
 
-  const urlConstructor = (showid: string) => {
+  const urlConstructor = (showId: string) => {
     const lang = currectQuery.get("lang");
-    // console.log("inside urlsonstructor",showid)
+    // console.log("inside urlsonstructor",showId)
     // const lang = currectQuery.get("")
 
     const params = new URLSearchParams();
     params.set("lang", lang ?? "");
-    params.set("showId", showid);
+    params.set("showId", showId);
 
     const queryString = params.toString();
 
@@ -280,7 +280,7 @@ function DateSelector() {
               {/* Certificate Badge */}
               <span className="px-2 py-0.5 rounded-md border border-gray-500 text-gray-300 text-xs font-bold tracking-wider uppercase bg-white/5">
                 {/* U/A */}
-                {matchedData?.certificate  }
+                {matchedData?.certificate}
                 {/* {console.log("This is certificate",matchedData?.certificate)} */}
               </span>
 

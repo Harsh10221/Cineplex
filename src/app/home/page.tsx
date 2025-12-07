@@ -1,3 +1,4 @@
+"use client"
 import NavBar from '@/src/components/NavBar'
 import SearchBar from '@/src/components/SearchBar'
 import MovieCard from '@/src/components/MovieCard'

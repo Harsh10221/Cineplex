@@ -2,25 +2,36 @@ we are on diffrent branch so make rembeber that mate
 
 add validation on frontend in add new movie
 
-
-
-
 Today goal , can add show time{
-    Need to show date , and can remove the show , if want then can edit 
+Need to show date , and can remove the show , if want then can edit
 }
 
+
+{{{{
+<!-- The occupied seats should be visisble to see which seat is already booked and -->
+
+ when click on continue first check and if the seat is already booked or not and 
+ 
+ when the user click on the seat and seat are not seleected and user continue another user cannot select same seat 
+
+}}}}
+
+
+The user should only see the show from the time left if there is a show at 8.30 and the current time is 9 pm then the user should not see the show 
+
+[
+    const userData = JSON.parse(localStorage.getItem("userData")!)
+at the end the ! mark when i just want the ts to keep quit
+]
 
 {
-    edge is like a maching for running middleware why it shortend out time by giving the response about the user authorazation . a user made a request /profile request goes to the closest cdn/edge (run time enviroment) and then if passes then the control will be passes to the other or response will be send from the server  
+edge is like a maching for running middleware why it shortend out time by giving the response about the user authorazation . a user made a request /profile request goes to the closest cdn/edge (run time enviroment) and then if passes then the control will be passes to the other or response will be send from the server  
 }
-
 
 show should be fetched when user is on the screen of the seat selection and the only time should be visible of that day only not other day
 
-[when edit why the whole list is changing , and the edited gone at last 
+[when edit why the whole list is changing , and the edited gone at last
 ]
-
-
 
 [
 user login , and after login user can buy ticket for the show and able to download the pdf of that and when ticket successfully purchased send a email with the pdf or a image somthing
@@ -41,5 +52,7 @@ when the data is available just dont send api in tanstack query may be we need t
 {
 
     i used the tanstack query for using the already availabele data there by reducing a api call for same data that we have on the initial stage , to cut the cost of server
+
+    seat locking : when click on the seat if i just mark the seat as book on every seat if a user clicks h1 then the seat will get added into db as status pending later on user clicks on h2 and then h3 then i need to check if the h1 is exist or not if not then only insert it and this will make many of the requests so i just send request when the user clicks on confirm btn 
 
 }
