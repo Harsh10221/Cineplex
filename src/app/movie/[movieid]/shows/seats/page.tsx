@@ -1,13 +1,24 @@
-"use client"
-import React, { useEffect, useState } from 'react';
-import { ChevronLeftIcon, ExclamationCircleIcon, TicketIcon, CalendarIcon, ClockIcon } from '@heroicons/react/24/outline';
-import { useParams, usePathname, useRouter, useSearchParams } from 'next/navigation';
-import Link from 'next/link';
+"use client";
+import React, { useEffect, useState } from "react";
+import {
+    ChevronLeftIcon,
+    ExclamationCircleIcon,
+    TicketIcon,
+    CalendarIcon,
+    ClockIcon,
+} from "@heroicons/react/24/outline";
+import {
+    useParams,
+    usePathname,
+    useRouter,
+    useSearchParams,
+} from "next/navigation";
+import Link from "next/link";
 // import { bookSeats } from '@/src/actions/movies';
 
-import LoginPromptModal from '@/src/components/LoginPromptModal';
-import { bookedSeats, bookSeats } from '@/src/actions/booking';
-import { createRazorpayOrder } from '@/src/actions/payment';
+import LoginPromptModal from "@/src/components/LoginPromptModal";
+import { bookedSeats, bookSeats } from "@/src/actions/booking";
+import { createRazorpayOrder } from "@/src/actions/payment";
 
 // --- TYPES ---
 type SeatStatus = 0 | 1 | 2; // 0: Gap, 1: Available, 2: Occupied
@@ -19,14 +30,14 @@ interface SeatRow {
 
 // --- MOCK DATA ---
 const SEAT_LAYOUT: SeatRow[] = [
-    { row: 'A', seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
-    { row: 'B', seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
-    { row: 'C', seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
-    { row: 'D', seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
-    { row: 'E', seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
-    { row: 'F', seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
-    { row: 'G', seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
-    { row: 'H', seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 450 },
+    { row: "A", seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
+    { row: "B", seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
+    { row: "C", seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
+    { row: "D", seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
+    { row: "E", seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
+    { row: "F", seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
+    { row: "G", seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 400 },
+    { row: "H", seats: [1, 1, 1, 0, 1, 1, 1, 1, 0, 1, 1, 1], price: 450 },
 ];
 
 export default function SeatSelectionPage() {
@@ -37,206 +48,65 @@ export default function SeatSelectionPage() {
     // let userData:any
     // let userData = JSON.parse(localStorage?.getItem("userData")! ?? "")
 
-    const [IsUserLoggedIn, setIsUserLoggedIn] = useState(null)
+    const [IsUserLoggedIn, setIsUserLoggedIn] = useState(null);
 
     const [showLoginModal, setShowLoginModal] = useState(false);
-    const [isBooking, setIsBooking] = useState(false)
+    const [isBooking, setIsBooking] = useState(false);
 
-    const currentQuery = useSearchParams()
-    const existingUrl = usePathname().toString()
+    const currentQuery = useSearchParams();
+    const existingUrl = usePathname().toString();
 
     // console.log("exist", existingUrl)
     // console.log("this is curerntquery",currentQuery.get("showId"))
     const ticketPrice = 400;
 
-    const router = useRouter()
 
-    const loadRazorpayScript = () => {
-        return new Promise((resolve) => {
-            const script = document.createElement("script");
-            script.src = "https://checkout.razorpay.com/v1/checkout.js";
-            script.onload = () => resolve(true);
-            script.onerror = () => resolve(false);
-            document.body.appendChild(script);
+    useEffect(() => {
+        let userData = JSON.parse(localStorage?.getItem("userData")! ?? "");
+        setIsUserLoggedIn(userData);
+    }, []);
+
+    useEffect(() => {
+        const id = currentQuery.get("showId");
+        console.log("This is id", id);
+
+        bookedSeats(currentQuery.get("showId") ?? "").then((data: any) => {
+            //what if i want this to be put as array so what i need to do ?
+            setOccupiedSeats(data);
         });
-    };
+    }, []);
 
-    useEffect(() => {
-
-        let userData = JSON.parse(localStorage?.getItem("userData")! ?? "")
-        setIsUserLoggedIn(userData)
-
-
-    }, [])
-
-
-    // console.log("Hello from seatselect", window.location.href)
-    // const handlePayment = async () => {
-    //     setIsBooking(true);
-    //     const amount = selectedSeats.length * ticketPrice;
-
-    //     // 1. Create Order on Server
-    //     const orderData = await createRazorpayOrder(amount);
-
-
-    //     const res = await loadRazorpayScript();
-    //     if (!res) {
-    //         alert("Razorpay SDK failed to load. Are you online?");
-    //         setIsBooking(false);
-    //         return;
-    //     }
-
-
-
-    //     if (!orderData.success) {
-    //         alert("Payment Init Failed");
-    //         setIsBooking(false);
-    //         return;
-    //     }
-
-    //     // 2. Open Razorpay Checkout
-    //     const options = {
-    //         key: orderData.keyId,
-    //         amount: orderData.amount,
-    //         currency: orderData.currency,
-    //         name: "CineBook",
-    //         description: "Movie Ticket Booking",
-    //         order_id: orderData.orderId, // This comes from step 1
-    //         handler: async function (response: any) {
-    //             // 3. Payment Successful! Now verify & book ticket.
-    //             console.log("Payment Success:", response);
-
-    //             // Call your existing createBooking action here
-    //             // const result = await bookSeats({
-    //             //     // userId,
-    //             //     showId,
-    //             //     seats: selectedSeats,
-    //             //     // totalPrice: amount,
-    //             //     // paymentId: response.razorpay_payment_id // Store this in DB!
-    //             // });
-
-    //             // if (result.success) {
-    //             //     alert("Booking Confirmed!");
-    //             //     setSelectedSeats([]);
-    //             //     router.refresh();
-    //             // } else {
-    //             //     alert("Booking Failed: " + result.message);
-    //             // }
-    //         },
-    //         prefill: {
-    //             name: "User Name", // You can get this from user prop
-    //             email: "user@example.com",
-    //             contact: "9999999999",
-    //         },
-    //         theme: {
-    //             color: "#EF4444", // Red to match your theme
-    //         },
-    //     };
-
-    //     const paymentObject = new (window as any).Razorpay(options);
-    //     paymentObject.open();
-    //     setIsBooking(false);
-    // };
-    // const handleBookSeats = () => {
-    //     bookSeats(selectedSeats)
-
-
-    // }
-
-    const handleNavigateToPaymentWindow = () => {
-
-
-
-    }
-
-
-    // useEffect(() => {
-    // userData = JSON.parse(localStorage?.getItem("userData")!)
-    // console.log("from useeffect", userData)
-
-    // }, [])
-    // console.log("outside useefect", userData)
-
-// const id = currentQuery.get("showId")
-//         console.log("outsideo is id", id)
-    useEffect(() => {
-        const id = currentQuery.get("showId")
-        console.log("This is id", id)
-
-        bookedSeats(currentQuery.get("showId") ?? "")
-            .then((data: any) => {  //what if i want this to be put as array so what i need to do ?
-                // console.log("This is data", data)
-                // const arr: any = []
-
-                // Array.isArray(data) ? data : [].map((seat: any) => {
-                //     const row = seat?.row
-                //     const seatNumber = seat?.seatNumber
-                //     const sum = String(row + seatNumber)
-                //     arr.push(sum)
-                //     // console.log("This is seat",sum)
-                // })
-
-                setOccupiedSeats(data)
-            }
-            )
-
-
-    }, [])
-
-    console.log("Occupied seats", occupiedSeats)
-
-    // const handleSubmitSeats = () => {
-    //     // 1. Check if user is logged in
-    //     console.log("hello form handlesubmit")
-    //     if (!IsUserLoggedIn) {
-    //         console.log("userdata", userData)
-    //         setShowLoginModal(true); // <--- Trigger the modal
-    //         return; // Stop execution
-    //     }
-
-    //     bookSeats(selectedSeats, currentQuery ?? "")
-
-    //     // 2. If logged in, proceed with booking
-    //     console.log("this are the seats ", selectedSeats);
-    //     // setOccupiedSeats((prev) => [...prev, ...selectedSeats]);
-    //     // setSelectedSeats([]);
-    // };
-
-
-
-    // console.log(JSON.parse(userData ?? ''))
+    console.log("Occupied seats", occupiedSeats);
 
     const backWardUrlConstructor = () => {
-        const movieId = useParams().movieid
-        const currectQuery = useSearchParams()
-        const lang = currectQuery.get("lang")
+        const movieId = useParams().movieid;
+        const currectQuery = useSearchParams();
+        const lang = currectQuery.get("lang");
 
         // const params = new URLSearchParams()
         // params.set("lang", lang ?? "")
         // params.set("showId", showId)
         // console.log("this is param",movieId)
         // console.log(`final url : /movie/${movieId}/shows?lang=${lang} `)
-        return `/movie/${movieId}/shows?lang=${lang}`
-    }
+        return `/movie/${movieId}/shows?lang=${lang}`;
+    };
 
-    backWardUrlConstructor()
+    backWardUrlConstructor();
 
     const toggleSeat = (seatId: string) => {
-
         // const toggleSeat = (rowLabel: string, seatIndex: number, seatId: string) => {
         // console.log("rowlabel",rowLabel)
         // console.log("seatIndex",seatIndex)
         // console.log("seatIndex",seatId)
-        // if (status === 2) return; 
-
+        // if (status === 2) return;
 
         // const seatId = `${rowLabel}${seatIndex}`;
 
         if (selectedSeats.includes(seatId)) {
-            setSelectedSeats(prev => prev.filter(id => id !== seatId));
+            setSelectedSeats((prev) => prev.filter((id) => id !== seatId));
         } else {
             if (selectedSeats.length < 10) {
-                setSelectedSeats(prev => [...prev, seatId]);
+                setSelectedSeats((prev) => [...prev, seatId]);
             } else {
                 setShowMaxSeatAlert(true);
                 setTimeout(() => setShowMaxSeatAlert(false), 3000);
@@ -245,11 +115,15 @@ export default function SeatSelectionPage() {
     };
 
     return (
-        <div className='min-h-screen bg-[#0f172a] text-white font-sans flex flex-col'>
-
+        <div className="min-h-screen bg-[#0f172a] text-white font-sans flex flex-col">
             {/* --- GLOBAL ALERT --- */}
-            <div className={`fixed top-24 lg:top-6 left-1/2 transform -translate-x-1/2 z-100 transition-all duration-300 pointer-events-none
-                ${showMaxSeatAlert ? 'opacity-100 translate-y-0' : 'opacity-0 -translate-y-4'}`}>
+            <div
+                className={`fixed top-24 lg:top-6 left-1/2 transform -translate-x-1/2 z-100 transition-all duration-300 pointer-events-none
+                ${showMaxSeatAlert
+                        ? "opacity-100 translate-y-0"
+                        : "opacity-0 -translate-y-4"
+                    }`}
+            >
                 <div className="bg-red-600/90 backdrop-blur-md text-white px-4 py-3 rounded-lg shadow-2xl flex items-center gap-2 border border-red-500/50">
                     <ExclamationCircleIcon className="w-5 h-5" />
                     <span className="font-bold text-xs">Max 10 seats allowed</span>
@@ -258,10 +132,8 @@ export default function SeatSelectionPage() {
 
             {/* --- LAYOUT WRAPPER --- */}
             <div className="flex flex-col lg:flex-row max-w-7xl mx-auto w-full flex-1">
-
                 {/* LEFT CONTENT */}
                 <div className="flex-1 flex flex-col relative z-10">
-
                     {/* MOBILE HEADER (Restored Original Look) */}
                     <div className="sticky lg:hidden top-0 z-50 bg-[#1a1a2e]/95 backdrop-blur-md border-b border-white/10 shadow-xl pb-4 pt-4 px-4 w-full">
                         <div className="flex items-center justify-between mb-4">
@@ -273,20 +145,33 @@ export default function SeatSelectionPage() {
                                 </Link>
 
                                 <div>
-                                    <h1 className="text-lg font-bold text-white leading-tight">Kantara: Chapter 1</h1>
-                                    <p className="text-xs text-gray-400">Eros Cinema • 11:00 PM</p>
+                                    <h1 className="text-lg font-bold text-white leading-tight">
+                                        Kantara: Chapter 1
+                                    </h1>
+                                    <p className="text-xs text-gray-400">
+                                        Eros Cinema • 11:00 PM
+                                    </p>
                                 </div>
                             </div>
                         </div>
                         {/* Mobile Selection Summary Card */}
                         <div className="flex items-center justify-between bg-white/5 border border-white/10 rounded-xl p-3">
                             <div className="text-sm text-gray-300">
-                                <span className="block text-xs text-gray-500 uppercase tracking-wider">Tickets</span>
-                                <span className="font-bold text-white">{selectedSeats.length} Seat{selectedSeats.length !== 1 ? 's' : ''}</span>
+                                <span className="block text-xs text-gray-500 uppercase tracking-wider">
+                                    Tickets
+                                </span>
+                                <span className="font-bold text-white">
+                                    {selectedSeats.length} Seat
+                                    {selectedSeats.length !== 1 ? "s" : ""}
+                                </span>
                             </div>
                             <div className="text-right">
-                                <span className="block text-xs text-gray-500 uppercase tracking-wider">Total</span>
-                                <span className="font-bold text-red-400 text-lg">₹ {selectedSeats.length * ticketPrice}</span>
+                                <span className="block text-xs text-gray-500 uppercase tracking-wider">
+                                    Total
+                                </span>
+                                <span className="font-bold text-red-400 text-lg">
+                                    ₹ {selectedSeats.length * ticketPrice}
+                                </span>
                             </div>
                         </div>
                     </div>
@@ -312,7 +197,9 @@ export default function SeatSelectionPage() {
                         {/* SCREEN */}
                         <div className="w-full max-w-[300px] lg:max-w-2xl mb-8 lg:mb-12 flex flex-col items-center perspective-container">
                             <div className="w-full h-6 lg:h-8 bg-linear-to-b from-purple-500/20 to-transparent border-t border-purple-500/40 transform perspective-500 rotate-x-12 opacity-50 blur-[1px]"></div>
-                            <p className="text-gray-500 text-[9px] uppercase tracking-widest mt-2">Screen this way</p>
+                            <p className="text-gray-500 text-[9px] uppercase tracking-widest mt-2">
+                                Screen this way
+                            </p>
                         </div>
 
                         {/* SEATS - Exact Mobile Specs Restored */}
@@ -320,14 +207,22 @@ export default function SeatSelectionPage() {
                             {SEAT_LAYOUT.map((row) => {
                                 let seatCounter = 0;
                                 return (
-                                    <div key={row.row} className="flex items-center justify-center gap-2 lg:gap-6">
-                                        <div className="w-3 lg:w-5 text-center text-gray-500 text-[10px] lg:text-xs font-bold">{row.row}</div>
+                                    <div
+                                        key={row.row}
+                                        className="flex items-center justify-center gap-2 lg:gap-6"
+                                    >
+                                        <div className="w-3 lg:w-5 text-center text-gray-500 text-[10px] lg:text-xs font-bold">
+                                            {row.row}
+                                        </div>
 
                                         {/* Mobile: gap-1, Desktop: gap-3 */}
                                         <div className="flex gap-1 lg:gap-3">
                                             {row.seats.map((status, idx) => {
                                                 // Mobile Gap: w-3, Desktop Gap: w-10
-                                                if (status === 0) return <div key={`gap-${idx}`} className="w-3 lg:w-10" />;
+                                                if (status === 0)
+                                                    return (
+                                                        <div key={`gap-${idx}`} className="w-3 lg:w-10" />
+                                                    );
 
                                                 seatCounter++;
                                                 const seatId = `${row.row}${seatCounter}`;
@@ -341,19 +236,18 @@ export default function SeatSelectionPage() {
                                                         disabled={isOccupied}
                                                         onClick={() => toggleSeat(seatId)}
                                                         className={`
-                                                            /* --- EXACT MOBILE SPECS --- */
+                                                            
                                                             w-6 h-6 text-[9px] rounded
                                                             
-                                                            /* --- DESKTOP SPECS --- */
                                                             lg:w-10 lg:h-10 lg:text-xs lg:rounded-lg
                                                             
                                                             font-medium flex items-center justify-center 
                                                             transition-all duration-200
                                                             ${isOccupied
-                                                                ? 'bg-gray-700 text-gray-500 cursor-not-allowed border border-transparent'
+                                                                ? "bg-gray-700 text-gray-500 cursor-not-allowed border border-transparent"
                                                                 : isSelected
-                                                                    ? 'bg-red-600 text-white shadow-lg shadow-red-600/50 border border-red-500 transform scale-110'
-                                                                    : 'bg-transparent border border-gray-600 text-gray-300 hover:border-white hover:bg-white/10'
+                                                                    ? "bg-red-600 text-white shadow-lg shadow-red-600/50 border border-red-500 transform scale-110"
+                                                                    : "bg-transparent border border-gray-600 text-gray-300 hover:border-white hover:bg-white/10"
                                                             }
                                                         `}
                                                     >
@@ -382,15 +276,21 @@ export default function SeatSelectionPage() {
                         <h2 className="text-2xl font-bold mb-2">Kantara: Chapter 1</h2>
                         <div className="flex flex-col gap-3 text-sm text-gray-400 mt-4">
                             <div className="flex items-center gap-3">
-                                <span className="bg-slate-700/50 p-1.5 rounded"><TicketIcon className="w-4 h-4" /></span>
+                                <span className="bg-slate-700/50 p-1.5 rounded">
+                                    <TicketIcon className="w-4 h-4" />
+                                </span>
                                 <span>Action, Thriller • 2h 30m</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="bg-slate-700/50 p-1.5 rounded"><CalendarIcon className="w-4 h-4" /></span>
+                                <span className="bg-slate-700/50 p-1.5 rounded">
+                                    <CalendarIcon className="w-4 h-4" />
+                                </span>
                                 <span>Today, 26 Nov</span>
                             </div>
                             <div className="flex items-center gap-3">
-                                <span className="bg-slate-700/50 p-1.5 rounded"><ClockIcon className="w-4 h-4" /></span>
+                                <span className="bg-slate-700/50 p-1.5 rounded">
+                                    <ClockIcon className="w-4 h-4" />
+                                </span>
                                 <span>11:00 PM • Eros Cinema</span>
                             </div>
                         </div>
@@ -399,42 +299,69 @@ export default function SeatSelectionPage() {
                     <div className="flex-1">
                         <div className="flex justify-between text-sm text-gray-400 mb-2">
                             <span>Selected Seats ({selectedSeats.length})</span>
-                            <button onClick={() => setSelectedSeats([])} className="text-red-400 hover:text-red-300 text-xs uppercase">Clear</button>
+                            <button
+                                onClick={() => setSelectedSeats([])}
+                                className="text-red-400 hover:text-red-300 text-xs uppercase"
+                            >
+                                Clear
+                            </button>
                         </div>
                         <div className="flex flex-wrap gap-2 mb-6">
-                            {selectedSeats.length > 0 ? selectedSeats.map(seat => (
-                                <span key={seat} className="bg-slate-700 text-white px-3 py-1 rounded text-xs border border-white/10">
-                                    {seat}
+                            {selectedSeats.length > 0 ? (
+                                selectedSeats.map((seat) => (
+                                    <span
+                                        key={seat}
+                                        className="bg-slate-700 text-white px-3 py-1 rounded text-xs border border-white/10"
+                                    >
+                                        {seat}
+                                    </span>
+                                ))
+                            ) : (
+                                <span className="text-gray-600 text-sm italic">
+                                    No seats selected
                                 </span>
-                            )) : <span className="text-gray-600 text-sm italic">No seats selected</span>}
+                            )}
                         </div>
                     </div>
 
                     <div className="mt-auto bg-slate-800/50 p-4 rounded-xl">
                         <div className="flex justify-between items-end mb-4">
                             <div className="flex flex-col">
-                                <span className="text-xs text-gray-400 uppercase tracking-wider">Total Price</span>
-                                <span className="text-3xl font-bold text-white">₹ {selectedSeats.length * ticketPrice}</span>
+                                <span className="text-xs text-gray-400 uppercase tracking-wider">
+                                    Total Price
+                                </span>
+                                <span className="text-3xl font-bold text-white">
+                                    ₹ {selectedSeats.length * ticketPrice}
+                                </span>
                             </div>
                         </div>
                         <button
                             disabled={selectedSeats.length === 0}
                             className="w-full bg-red-600 hover:bg-red-700 disabled:bg-slate-700 disabled:text-slate-500 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl shadow-lg transition-all active:scale-95"
                         >
-                            {selectedSeats.length === 0 ? 'Select Seats' : `Pay ₹${selectedSeats.length * ticketPrice}`}
+                            {selectedSeats.length === 0
+                                ? "Select Seats"
+                                : `Pay ₹${selectedSeats.length * ticketPrice}`}
                         </button>
                     </div>
                 </div>
 
                 {/* MOBILE FLOATING ACTION BUTTON (Restored from your original) */}
                 {/* {selectedSeats.length > 0 && ( */}
-                <div className={`${selectedSeats.length > 0 ? "translate-y-0" : "translate-y-100"} transition-transform duration-500  fixed lg:hidden bottom-0 left-0 w-full p-4 bg-[#1a1a2e] border-t border-white/10 animate-in slide-in-from-bottom  z-60`}>
+                <div
+                    className={`${selectedSeats.length > 0 ? "translate-y-0" : "translate-y-100"
+                        } transition-transform duration-500  fixed lg:hidden bottom-0 left-0 w-full p-4 bg-[#1a1a2e] border-t border-white/10 animate-in slide-in-from-bottom  z-60`}
+                >
                     <div className="w-full flex items-center justify-between gap-4">
                         {/* http://localhost:3000/movie/a76c099f-21eb-457f-880a-66cc032bd17b/shows/seats?lang=English&showId=8ede61d5-e705-48bb-84a6-68fa11eb250e */}
                         <Link
-
                             className="flex-1 text-center bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base"
-                            href={`${existingUrl}/payment?showId=${currentQuery.get("showId")}&lang=${currentQuery.get("lang")}&seats=${selectedSeats.join()}`} >
+                            href={`${existingUrl}/payment?showId=${currentQuery.get(
+                                "showId"
+                            )}&lang=${currentQuery.get(
+                                "lang"
+                            )}&seats=${selectedSeats.join()}`}
+                        >
                             {/* <button 
                              className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base"> */}
                             {/* <button onClick={handleNavigateToPaymentWindow} className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 rounded-xl shadow-lg shadow-red-900/40 transition-colors active:scale-95 text-sm md:text-base"> */}
@@ -442,23 +369,19 @@ export default function SeatSelectionPage() {
                             Confirm {selectedSeats.length} Seats
                             {/* </button> */}
                         </Link>
-
                     </div>
                 </div>
                 {/* )} */}
-
             </div>
-
 
             {showLoginModal && (
                 <LoginPromptModal onClose={() => setShowLoginModal(false)} />
             )}
-
         </div>
     );
 }
 
-const LegendItem = ({ color, label }: { color: string, label: string }) => (
+const LegendItem = ({ color, label }: { color: string; label: string }) => (
     <div className="flex items-center gap-1.5">
         <div className={`w-3 h-3 rounded ${color}`}></div>
         <span className="text-[10px] text-gray-400">{label}</span>

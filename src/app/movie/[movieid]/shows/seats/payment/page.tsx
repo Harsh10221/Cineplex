@@ -34,13 +34,21 @@ export default function PaymentPage() {
     areSelectedSeatBooked(seatsIntoArray, query.get("showId") ?? "")
       .then((message) => {
         if (message?.status?.includes('failed')) {
+          console.log("Go back simon")
           navigate.push(url)
+          console.log(message)
+          alert("seat already book")
+          throw new Error("Booking failed")
         }
-        console.log(message)
 
-      })
+      }).then(() => {
+        console.log("i am running")
+        handlePayment(seatsIntoArray)
+      }
+      ).catch((err)=>console.error(err))
 
     // console.log("This are seats", selectedSeats)
+
 
 
   }, [])
@@ -57,14 +65,16 @@ export default function PaymentPage() {
   };
 
 
-  const handlePayment = async () => {
+  const handlePayment = async (seats: any) => {
 
-    if (selectedSeats.length == 0) {
+    // if (selectedSeats.length == 0) {
+    if (seats.length == 0) {
       console.log("No seat selected")
       return
     }
 
-    const amount = selectedSeats.length * 400;
+    // const amount = selectedSeats.length * 400;
+    const amount = seats.length * 400;
 
     // 1. Create Order on Server
     const orderData = await createRazorpayOrder(amount);
@@ -100,7 +110,8 @@ export default function PaymentPage() {
         console.log("Payment Success:", response);
         navigate.push(url)
 
-        const result = bookSeats(selectedSeats, query.get("showId") ?? "")
+        const result = await bookSeats(seats, query.get("showId") ?? "")
+        // const result = bookSeats(selectedSeats, query.get("showId") ?? "")
 
         // Call your existing createBooking action here
         // const result = await bookSeats({
@@ -152,16 +163,16 @@ export default function PaymentPage() {
   };
 
 
-  useEffect(() => {
-    // if (selectedSeats.length > 0) {
-    if (isSeatsChecked) {
-      console.log("i am calling the handlepayment")
+  // useEffect(() => {
+  //   // if (selectedSeats.length > 0) {
+  //   if (isSeatsChecked) {
+  //     console.log("i am calling the handlepayment")
 
-      handlePayment()
-    }
+  //     handlePayment()
+  //   }
 
 
-  }, [isSeatsChecked])
+  // }, [isSeatsChecked])
 
   // useEffect(() => {
   //   console.log("selected seat booked",selectedSeats)
@@ -180,6 +191,8 @@ export default function PaymentPage() {
   // }, []);
 
   // MOCK DATA: Simulating 10 seats
+
+
   const ticketData = {
     movie: "Kantara: Chapter 1",
     format: "Hindi • 2D",

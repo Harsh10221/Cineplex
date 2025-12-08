@@ -32,7 +32,8 @@ model Booking {
   showId String
   show   Show   @relation(fields: [showId], references: [id])
 
-  status BookingStatus
+  status BookingStatus @default(PENDING)
+  expireAt DateTime? 
 
   row        String
   seatNumber Int

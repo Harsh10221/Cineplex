@@ -11,6 +11,7 @@ import { PlayCircleIcon } from '@heroicons/react/24/solid'
 import { getAllMovies } from '../actions/movies';
 import MovieCard from '../components/MovieCard';
 import { useQuery } from '@tanstack/react-query';
+import NavBar from '../components/NavBar';
 
 // --- IMPORTANT: UNCOMMENT THIS IN YOUR LOCAL PROJECT ---
 // import { getAllMovies } from '../actions/movies' 
@@ -76,42 +77,42 @@ function SearchBar({ width }: { width?: string }) {
 }
 
 // 2. NAV BAR (Desktop Optimized)
-function NavBar() {
-    return (
-        <div className='w-full max-w-7xl mx-auto flex items-center justify-between py-2 sm:py-3 px-2 sm:px-6 lg:px-8'> 
-            <a href="/">
-                <div className='bg-gradient-to-br from-red-600 to-red-700 shadow-lg shadow-red-900/50 rounded-full h-10 w-10 lg:h-12 lg:w-12 flex items-center justify-center shrink-0 border border-white/10 transition-transform hover:scale-105'>
-                    <span className='text-white text-[10px] lg:text-xs font-extrabold leading-tight text-center tracking-tighter'>
-                        SHOW<br/>TIME
-                    </span>
-                </div>
-            </a>
+// function NavBar() {
+//     return (
+//         <div className='w-full max-w-7xl mx-auto flex items-center justify-between py-2 sm:py-3 px-2 sm:px-6 lg:px-8'> 
+//             <a href="/">
+//                 <div className='bg-gradient-to-br from-red-600 to-red-700 shadow-lg shadow-red-900/50 rounded-full h-10 w-10 lg:h-12 lg:w-12 flex items-center justify-center shrink-0 border border-white/10 transition-transform hover:scale-105'>
+//                     <span className='text-white text-[10px] lg:text-xs font-extrabold leading-tight text-center tracking-tighter'>
+//                         SHOW<br/>TIME
+//                     </span>
+//                 </div>
+//             </a>
 
-            <div className='flex items-center mx-4 grow min-w-0'> 
-                <div className='mr-2 shrink-0 p-1.5 bg-white/10 rounded-full backdrop-blur-md border border-white/5'>
-                    <MapPinIcon className='text-red-400 h-4 w-4 lg:h-5 lg:w-5' />
-                </div>
-                <div className='flex flex-col min-w-0'>
-                    <span className='font-bold text-white leading-none truncate text-sm lg:text-base'>Mumbai</span>
-                    <span className='text-xs text-gray-400 leading-none truncate mt-1 lg:text-sm'>India</span>
-                </div>
-            </div>
+//             <div className='flex items-center mx-4 grow min-w-0'> 
+//                 <div className='mr-2 shrink-0 p-1.5 bg-white/10 rounded-full backdrop-blur-md border border-white/5'>
+//                     <MapPinIcon className='text-red-400 h-4 w-4 lg:h-5 lg:w-5' />
+//                 </div>
+//                 <div className='flex flex-col min-w-0'>
+//                     <span className='font-bold text-white leading-none truncate text-sm lg:text-base'>Mumbai</span>
+//                     <span className='text-xs text-gray-400 leading-none truncate mt-1 lg:text-sm'>India</span>
+//                 </div>
+//             </div>
 
-            <div className="hidden md:flex items-center space-x-6 mr-6">
-                <a href="#" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Movies</a>
-                <a href="#" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Events</a>
-                <a href="#" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Sports</a>
-            </div>
+//             <div className="hidden md:flex items-center space-x-6 mr-6">
+//                 <a href="#" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Movies</a>
+//                 <a href="#" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Events</a>
+//                 <a href="#" className="text-sm font-medium text-gray-300 hover:text-white transition-colors">Sports</a>
+//             </div>
 
-            <div className='shrink-0'>
-                <div className='flex items-center gap-2 p-1 rounded-full hover:bg-white/10 transition-colors cursor-pointer group'>
-                    <span className="hidden md:block text-sm font-medium text-white group-hover:text-red-400 transition-colors">Sign In</span>
-                    <UserCircleIcon className='text-white/90 w-8 h-8 lg:w-10 lg:h-10' /> 
-                </div>
-            </div>
-        </div>
-    )
-}
+//             <div className='shrink-0'>
+//                 <div className='flex items-center gap-2 p-1 rounded-full hover:bg-white/10 transition-colors cursor-pointer group'>
+//                     <span className="hidden md:block text-sm font-medium text-white group-hover:text-red-400 transition-colors">Sign In</span>
+//                     <UserCircleIcon className='text-white/90 w-8 h-8 lg:w-10 lg:h-10' /> 
+//                 </div>
+//             </div>
+//         </div>
+//     )
+// }
 
 // 3. MOVIE CARD
 // function MovieCard({ movieData }: { movieData: Movie }) {
@@ -174,7 +175,7 @@ function MovieDetailScreen({ handleBookBtnClickToggle, isNavigaationEnabled }: a
                     alt="Backdrop"
                     className="absolute inset-0 w-full h-full object-cover blur-3xl opacity-40 scale-110" 
                 />
-                <div className="absolute inset-0 bg-gradient-to-t md:bg-gradient-to-r from-[#1a1a2e] via-[#1a1a2e]/60 to-transparent" />
+                <div className="absolute inset-0 bg-linear-to-t md:bg-linear-to-r from-[#1a1a2e] via-[#1a1a2e]/60 to-transparent" />
                 <div className="absolute inset-0 bg-black/20" /> 
             </div>
 
@@ -188,7 +189,7 @@ function MovieDetailScreen({ handleBookBtnClickToggle, isNavigaationEnabled }: a
                     </a>
                 )}
 
-                <div className="relative shrink-0 w-[200px] h-[300px] md:w-[240px] md:h-[360px] lg:w-[280px] lg:h-[420px] shadow-2xl shadow-black/60 ring-1 ring-white/20 rounded-xl overflow-hidden transform transition-transform duration-500 hover:scale-[1.02]">
+                <div className="relative shrink-0 w-[200px] h-[300px] md:w-60 md:h-[360px] lg:w-[280px] lg:h-[420px] shadow-2xl shadow-black/60 ring-1 ring-white/20 rounded-xl overflow-hidden transform transition-transform duration-500 hover:scale-[1.02]">
                     <img
                         src={posterUrl}
                         alt="Kantara"
@@ -199,7 +200,7 @@ function MovieDetailScreen({ handleBookBtnClickToggle, isNavigaationEnabled }: a
                 <div className="flex flex-col items-center md:items-start text-center md:text-left w-full max-w-2xl pb-4">
                     <h1 className="text-3xl md:text-5xl lg:text-6xl font-black text-white leading-tight mb-4 tracking-tight drop-shadow-xl">
                         Kantara A Legend:<br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-red-500 to-orange-500">
+                        <span className="text-transparent bg-clip-text bg-linear-to-r from-red-500 to-orange-500">
                             Chapter 1
                         </span>
                     </h1>
@@ -214,7 +215,7 @@ function MovieDetailScreen({ handleBookBtnClickToggle, isNavigaationEnabled }: a
                     <div className="w-full flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
                         <button
                             onClick={handleBookBtnClickToggle}
-                            className="flex-1 sm:flex-none sm:w-48 bg-gradient-to-r from-red-600 to-red-700 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg shadow-red-900/40 hover:from-red-500 hover:to-red-600 active:scale-[0.98] transition-all duration-200 border border-red-500/50"
+                            className="flex-1 sm:flex-none sm:w-48 bg-linear-to-r from-red-600 to-red-700 text-white font-bold text-lg py-3.5 rounded-xl shadow-lg shadow-red-900/40 hover:from-red-500 hover:to-red-600 active:scale-[0.98] transition-all duration-200 border border-red-500/50"
                         >
                             Book Tickets
                         </button>
@@ -307,13 +308,13 @@ function Page() {
 
 
   return (
-    <div className='min-h-screen bg-gradient-to-b from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white flex flex-col relative overflow-x-hidden font-sans'>
+    <div className='min-h-screen bg-linear-to-b from-[#1a1a2e] via-[#16213e] to-[#0f3460] text-white flex flex-col relative overflow-x-hidden font-sans'>
       
       <div className="fixed top-0 left-0 w-96 h-96 bg-purple-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob pointer-events-none"></div>
       <div className="fixed top-0 right-0 w-96 h-96 bg-pink-600 rounded-full mix-blend-multiply filter blur-3xl opacity-10 animate-blob animation-delay-2000 pointer-events-none"></div>
 
       {/* Floating Header */}
-      <div className="fixed top-0 z-50 w-full px-4 pt-4 pb-2 bg-gradient-to-b from-black/90 via-black/60 to-transparent pointer-events-none">
+      <div className="fixed top-0 z-50 w-full px-4 pt-4 pb-2 bg-linear-to-b from-black/90 via-black/60 to-transparent pointer-events-none">
         <div className="max-w-7xl mx-auto pointer-events-auto">
             <div className="flex flex-col gap-3 backdrop-blur-xl rounded-2xl p-3 border border-white/10 bg-white/5 shadow-2xl transition-all duration-300 hover:bg-white/10">
             <NavBar />
@@ -329,7 +330,7 @@ function Page() {
         {/* Featured Movie Section */}
         <div className='w-full mb-12'>
           <div className='relative group'>
-            <div className="absolute -inset-1 bg-gradient-to-r from-pink-600 to-purple-600 rounded-3xl blur opacity-20 group-hover:opacity-60 transition duration-1000 group-hover:duration-200"></div>
+            <div className="absolute -inset-1 bg-linear-to-r from-pink-600 to-purple-600 rounded-3xl blur opacity-20 group-hover:opacity-60 transition duration-1000 group-hover:duration-200"></div>
             <div className='relative overflow-hidden rounded-3xl shadow-2xl ring-1 ring-white/10 bg-[#1a1a2e] transform transition-transform duration-500'>
               <MovieDetailScreen />
             </div>
@@ -339,7 +340,7 @@ function Page() {
         {/* Section Header */}
         <div className='flex items-center gap-4 mb-8 pl-2'>
           <div className="h-10 w-1.5 bg-red-600 rounded-full shadow-[0_0_10px_rgba(220,38,38,0.8)]"></div>
-          <h2 className='text-3xl md:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400'>
+          <h2 className='text-3xl md:text-4xl font-bold tracking-tight text-transparent bg-clip-text bg-linear-to-r from-white to-gray-400'>
             Now Showing
           </h2>
         </div>

@@ -55,4 +55,10 @@ when the data is available just dont send api in tanstack query may be we need t
 
     seat locking : when click on the seat if i just mark the seat as book on every seat if a user clicks h1 then the seat will get added into db as status pending later on user clicks on h2 and then h3 then i need to check if the h1 is exist or not if not then only insert it and this will make many of the requests so i just send request when the user clicks on confirm btn 
 
+
+    previsouly i have the 2 querys findmany and createmany first i check if the seats are available to book and then create if not but this is showing unexpected behaviour so i remove the findmany query and just used the createmany 
+
+
+    .then (promise chain) cannot break the chain with the return 
+
 }
