@@ -188,30 +188,60 @@ export async function areSelectedSeatBooked(seats: any, showId: string) {
     }
 }
 
-
 export async function getUserBookingShow() {
-
-    const user = await getCurrentUser()
+    const user = await getCurrentUser();
 
     // console.log("This is user", user)
 
     if (!user) {
-        return { status: "Failed", message: "User is required" }
+        return { status: "Failed", message: "User is required" };
     }
 
     const userBookings = await db.booking.findMany({
         where: {
             userId: user.id,
             expireAt: null,
-            status: "CONFIRM"
+            status: "CONFIRM",
 
+            // SHow the user there booking
+        },
+        include: {
+            show: {
+                include: {
+                    movie: true,
+                    theater: {
+                        select:{
+                            name:true
+                        }
+                    }
+
+                },
+            },
+        },
+    });
+
+    const formatedData = userBookings.reduce((acc, show): any => {
+        const showId = show.showId;
+
+        if (!acc[showId]) {
+            acc[showId] = {
+                id: show.id,
+                show: show.show,
+                seats: [],
+            };
         }
-    })
 
+        acc[showId].seats.push(show.row + show.seatNumber);
+
+
+        return acc;
+    }, {});
+
+    // console.log("formated data", formatedData)
+
+    const values = Object.values(formatedData)
 
     // console.log("This is user bookings", userBookings)
 
-
-    return { status: "Success", userBookings }
-
+    return { status: "Success", userBookedShows: values };
 }

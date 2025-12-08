@@ -9,6 +9,7 @@ import { collectFallbackRouteParams } from "next/dist/build/segment-config/app/a
 import { getCurrentUser } from "@/lib/auth";
 import { userAgent } from "next/server";
 import { stat } from "fs";
+import { Moirai_One } from "next/font/google";
 
 
 interface MovieFormData {
@@ -313,4 +314,22 @@ export async function loginUser(data: any) {
 
     return userObj
 
+}
+
+export async function getMovieDetails(movieId:string) {
+    
+    if (!movieId) {
+        return { success: false, message: "MovieId is required" };
+
+    }
+
+    const data = await db.movie.findFirst({
+        where:{
+            id:movieId
+        }
+    })
+
+    // console.log("DAta",data)
+
+    return data
 }

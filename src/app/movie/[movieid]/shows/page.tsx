@@ -13,45 +13,46 @@ import { match } from "assert";
 import { useParams, usePathname, useSearchParams } from "next/navigation";
 import { MapPinIcon, Minus } from "lucide-react";
 import { v4 as uuidv4 } from "uuid";
+import NavBar from "@/src/components/NavBar";
 
 // --- INLINE COMPONENTS FOR PREVIEW ---
 
 // 1. NavBar Component
-function NavBar() {
-  return (
-    <div className="w-full max-w-7xl mx-auto flex items-center justify-between py-2 sm:py-3 px-2 sm:px-6 lg:px-8">
-      <a href="/">
-        <div className="bg-linear-to-br from-red-600 to-red-700 shadow-lg shadow-red-900/50 rounded-full h-10 w-10 lg:h-12 lg:w-12 flex items-center justify-center shrink-0 border border-white/10 transition-transform hover:scale-105">
-          <span className="text-white text-[10px] lg:text-xs font-extrabold leading-tight text-center tracking-tighter">
-            SHOW
-            <br />
-            TIME
-          </span>
-        </div>
-      </a>
+// function NavBar() {
+//   return (
+//     <div className="w-full max-w-7xl mx-auto flex items-center justify-between py-2 sm:py-3 px-2 sm:px-6 lg:px-8">
+//       <a href="/">
+//         <div className="bg-linear-to-br from-red-600 to-red-700 shadow-lg shadow-red-900/50 rounded-full h-10 w-10 lg:h-12 lg:w-12 flex items-center justify-center shrink-0 border border-white/10 transition-transform hover:scale-105">
+//           <span className="text-white text-[10px] lg:text-xs font-extrabold leading-tight text-center tracking-tighter">
+//             SHOW
+//             <br />
+//             TIME
+//           </span>
+//         </div>
+//       </a>
 
-      <div className="flex items-center mx-4 grow min-w-0">
-        <div className="flex flex-col min-w-0">
-          <span className="font-bold text-white leading-none truncate text-sm lg:text-base">
-            Mumbai
-          </span>
-          <span className="text-xs text-gray-400 leading-none truncate mt-1 lg:text-sm">
-            India
-          </span>
-        </div>
-      </div>
+//       <div className="flex items-center mx-4 grow min-w-0">
+//         <div className="flex flex-col min-w-0">
+//           <span className="font-bold text-white leading-none truncate text-sm lg:text-base">
+//             Mumbai
+//           </span>
+//           <span className="text-xs text-gray-400 leading-none truncate mt-1 lg:text-sm">
+//             India
+//           </span>
+//         </div>
+//       </div>
 
-      <div className="shrink-0">
-        <div className="flex items-center gap-2 p-1 rounded-full hover:bg-white/10 transition-colors cursor-pointer group">
-          <span className="hidden md:block text-sm font-medium text-white group-hover:text-red-400 transition-colors">
-            Sign In
-          </span>
-          <UserCircleIcon className="text-white/90 w-8 h-8 lg:w-10 lg:h-10" />
-        </div>
-      </div>
-    </div>
-  );
-}
+//       <div className="shrink-0">
+//         <div className="flex items-center gap-2 p-1 rounded-full hover:bg-white/10 transition-colors cursor-pointer group">
+//           <span className="hidden md:block text-sm font-medium text-white group-hover:text-red-400 transition-colors">
+//             Sign In
+//           </span>
+//           <UserCircleIcon className="text-white/90 w-8 h-8 lg:w-10 lg:h-10" />
+//         </div>
+//       </div>
+//     </div>
+//   );
+// }
 
 // 2. AppFooter Component
 function AppFooter() {
@@ -195,13 +196,15 @@ function DateSelector() {
   // console.log("cuurrent query",useSearchParams().get("lang"))
 
   const urlConstructor = (showId: string) => {
-    const lang = currectQuery.get("lang");
+    // const lang = currectQuery.get("lang");
     // console.log("inside urlsonstructor",showId)
     // const lang = currectQuery.get("")
 
     const params = new URLSearchParams();
-    params.set("lang", lang ?? "");
+    params.set("lang", currectQuery.get("lang") ?? "");
     params.set("showId", showId);
+    params.set("movieId", currectQuery.get("movieId") ?? "");
+
 
     const queryString = params.toString();
 

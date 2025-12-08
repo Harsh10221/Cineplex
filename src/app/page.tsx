@@ -12,6 +12,7 @@ import { getAllMovies } from '../actions/movies';
 import MovieCard from '../components/MovieCard';
 import { useQuery } from '@tanstack/react-query';
 import NavBar from '../components/NavBar';
+import AppFooter from '../components/AppFooter';
 
 // --- IMPORTANT: UNCOMMENT THIS IN YOUR LOCAL PROJECT ---
 // import { getAllMovies } from '../actions/movies' 
@@ -232,48 +233,48 @@ function MovieDetailScreen({ handleBookBtnClickToggle, isNavigaationEnabled }: a
 }
 
 // 5. APP FOOTER
-function AppFooter() {
-    return (
-        <footer className="bg-[#0f3460] text-white w-full py-10 sm:px-10 mt-0">
-            <div className="max-w-7xl p-5 mx-auto">
-                <div className="flex flex-col sm:flex-row justify-between border-b border-white/10 pb-8">
-                    <div className="mb-8 sm:mb-0 w-full sm:w-1/2 lg:w-1/4">
-                        <h3 className="text-lg text-white font-bold tracking-wide mb-4">Support</h3>
-                        <ul className="space-y-3 text-sm text-gray-400">
-                            <li className="hover:text-white cursor-pointer transition-colors duration-200">Contact Us</li>
-                            <li className="hover:text-white cursor-pointer transition-colors duration-200">FAQs</li>
-                            <li className="hover:text-white cursor-pointer transition-colors duration-200">Terms of Service</li>
-                            <li className="hover:text-white cursor-pointer transition-colors duration-200">Privacy Policy</li>
-                        </ul>
-                    </div>
+// function AppFooter() {
+//     return (
+//         <footer className="bg-[#0f3460] text-white w-full py-10 sm:px-10 mt-0">
+//             <div className="max-w-7xl p-5 mx-auto">
+//                 <div className="flex flex-col sm:flex-row justify-between border-b border-white/10 pb-8">
+//                     <div className="mb-8 sm:mb-0 w-full sm:w-1/2 lg:w-1/4">
+//                         <h3 className="text-lg text-white font-bold tracking-wide mb-4">Support</h3>
+//                         <ul className="space-y-3 text-sm text-gray-400">
+//                             <li className="hover:text-white cursor-pointer transition-colors duration-200">Contact Us</li>
+//                             <li className="hover:text-white cursor-pointer transition-colors duration-200">FAQs</li>
+//                             <li className="hover:text-white cursor-pointer transition-colors duration-200">Terms of Service</li>
+//                             <li className="hover:text-white cursor-pointer transition-colors duration-200">Privacy Policy</li>
+//                         </ul>
+//                     </div>
                     
-                    <div className="w-full sm:w-1/2 lg:w-1/4">
-                        <h3 className="text-lg text-white font-bold tracking-wide mb-4">ShowTime</h3>
-                        <ul className="space-y-3 text-sm text-gray-400">
-                            <li className="hover:text-white cursor-pointer transition-colors duration-200">About Us</li>
-                            <li className="hover:text-white cursor-pointer transition-colors duration-200">Careers</li>
-                            <li className="hover:text-white cursor-pointer transition-colors duration-200">Press</li>
-                        </ul>
-                    </div>
-                </div>
+//                     <div className="w-full sm:w-1/2 lg:w-1/4">
+//                         <h3 className="text-lg text-white font-bold tracking-wide mb-4">ShowTime</h3>
+//                         <ul className="space-y-3 text-sm text-gray-400">
+//                             <li className="hover:text-white cursor-pointer transition-colors duration-200">About Us</li>
+//                             <li className="hover:text-white cursor-pointer transition-colors duration-200">Careers</li>
+//                             <li className="hover:text-white cursor-pointer transition-colors duration-200">Press</li>
+//                         </ul>
+//                     </div>
+//                 </div>
 
-                <div className="py-8 border-b border-white/10">
-                    <h3 className="text-lg text-white font-bold tracking-wide mb-4">Follow Us</h3>
-                    <div className="flex space-x-4">
-                        {/* Placeholder Social Icons */}
-                        <div className="bg-white p-2 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors cursor-pointer text-black font-bold flex items-center justify-center text-xs">FB</div>
-                        <div className="bg-white p-2 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors cursor-pointer text-black font-bold flex items-center justify-center text-xs">TW</div>
-                        <div className="bg-white p-2 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors cursor-pointer text-black font-bold flex items-center justify-center text-xs">IG</div>
-                    </div>
-                </div>
+//                 <div className="py-8 border-b border-white/10">
+//                     <h3 className="text-lg text-white font-bold tracking-wide mb-4">Follow Us</h3>
+//                     <div className="flex space-x-4">
+//                         {/* Placeholder Social Icons */}
+//                         <div className="bg-white p-2 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors cursor-pointer text-black font-bold flex items-center justify-center text-xs">FB</div>
+//                         <div className="bg-white p-2 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors cursor-pointer text-black font-bold flex items-center justify-center text-xs">TW</div>
+//                         <div className="bg-white p-2 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors cursor-pointer text-black font-bold flex items-center justify-center text-xs">IG</div>
+//                     </div>
+//                 </div>
 
-                <div className="pt-8 text-center text-sm text-gray-500 font-medium">
-                    &copy; {new Date().getFullYear()} ShowTime. All Rights Reserved.
-                </div>
-            </div>
-        </footer>
-    );
-}
+//                 <div className="pt-8 text-center text-sm text-gray-500 font-medium">
+//                     &copy; {new Date().getFullYear()} ShowTime. All Rights Reserved.
+//                 </div>
+//             </div>
+//         </footer>
+//     );
+// }
 
 // --- MAIN PAGE ---
 

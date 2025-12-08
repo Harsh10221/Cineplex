@@ -10,7 +10,6 @@ import {
 import {
     useParams,
     usePathname,
-    useRouter,
     useSearchParams,
 } from "next/navigation";
 import Link from "next/link";
@@ -18,7 +17,7 @@ import Link from "next/link";
 
 import LoginPromptModal from "@/src/components/LoginPromptModal";
 import { bookedSeats, bookSeats } from "@/src/actions/booking";
-import { createRazorpayOrder } from "@/src/actions/payment";
+import { getMovieDetails } from "@/src/actions/movies";
 
 // --- TYPES ---
 type SeatStatus = 0 | 1 | 2; // 0: Gap, 1: Available, 2: Occupied
@@ -47,11 +46,11 @@ export default function SeatSelectionPage() {
     const [showMaxSeatAlert, setShowMaxSeatAlert] = useState(false);
     // let userData:any
     // let userData = JSON.parse(localStorage?.getItem("userData")! ?? "")
-
+    const [movieData, setMovieData] = useState<any>(null)
     const [IsUserLoggedIn, setIsUserLoggedIn] = useState(null);
 
     const [showLoginModal, setShowLoginModal] = useState(false);
-    const [isBooking, setIsBooking] = useState(false);
+    // const [isBooking, setIsBooking] = useState(false);
 
     const currentQuery = useSearchParams();
     const existingUrl = usePathname().toString();
@@ -68,7 +67,7 @@ export default function SeatSelectionPage() {
 
     useEffect(() => {
         const id = currentQuery.get("showId");
-        console.log("This is id", id);
+        // console.log("This is id", id);
 
         bookedSeats(currentQuery.get("showId") ?? "").then((data: any) => {
             //what if i want this to be put as array so what i need to do ?
@@ -76,7 +75,13 @@ export default function SeatSelectionPage() {
         });
     }, []);
 
-    console.log("Occupied seats", occupiedSeats);
+    useEffect(() => {
+      getMovieDetails(currentQuery.get("movieId") ?? "").then(data=> setMovieData(data))
+    
+    }, [])
+    
+
+    // console.log("Occupied seats", occupiedSeats);
 
     const backWardUrlConstructor = () => {
         const movieId = useParams().movieid;
@@ -146,10 +151,11 @@ export default function SeatSelectionPage() {
 
                                 <div>
                                     <h1 className="text-lg font-bold text-white leading-tight">
-                                        Kantara: Chapter 1
+                                        {movieData?.title ?? "No info"}
                                     </h1>
                                     <p className="text-xs text-gray-400">
                                         Eros Cinema • 11:00 PM
+                                        {/* {movieData.} */}
                                     </p>
                                 </div>
                             </div>

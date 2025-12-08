@@ -8,7 +8,7 @@ function MovieCard({ movieData }: any) {
 
     return (
         // LOGIC NOTE: You are hardcoding "kantara". You should probably use movieData.id or movieData.title here.
-        <Link href={`/movie/${movieData.id}`} className="block w-full h-full">
+        <Link href={`/movie/${movieData.id}?movieId=${movieData.id}`} className="block w-full h-full">
             <div className='
                 group
                 w-full

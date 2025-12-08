@@ -38,16 +38,19 @@ function AppFooter() {
                 <div className="py-8 border-b border-white/10">
                     <h3 className="text-lg text-white font-bold tracking-wide mb-4">Follow Us</h3>
                     <div className="flex space-x-4">
-                        {/* Added bg-white and padding to ensure logos are visible on dark theme */}
-                        <a href="#" aria-label="Facebook" className="bg-white p-1.5 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors flex items-center justify-center">
-                            <img className='w-full h-full object-contain' src="/FacebookLogo.png" alt="Facebook" />
-                        </a>
-                        <a href="#" aria-label="Twitter" className="bg-white p-1.5 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors flex items-center justify-center">
-                            <img className='w-full h-full object-contain' src="/TwitterLogo.png" alt="Twitter" />
-                        </a>
-                        <a href="#" aria-label="Instagram" className="bg-white p-1.5 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors flex items-center justify-center">
-                            <img className='w-full h-full object-contain' src="/InstagramLogo.png" alt="Instagram" />
-                        </a>
+                        
+                        {/* <a href="#" aria-label="Facebook" className=" p-1.5 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors flex items-center justify-center"> */}
+                            <img className='w-10 h-10 ' src="/FacebookLogo.png" alt="Facebook" />
+                        {/* </a> */}
+
+                        {/* <a href="#" aria-label="Twitter" className="bg-white p-1.5 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors flex items-center justify-center"> */}
+                            <img className='w-9 h-9 object-contain' src="/TwitterLogo.png" alt="Twitter" />
+                        {/* </a> */}
+
+                        {/* <a href="#" aria-label="Instagram" className="bg-white p-1.5 rounded-full w-9 h-9 hover:bg-gray-200 transition-colors flex items-center justify-center"> */}
+                            <img className='w-9 h-9 object-contain' src="/InstagramLogo.png" alt="Instagram" />
+                        {/* </a> */}
+
                     </div>
                 </div>
 

@@ -51,7 +51,7 @@ function LanguageModal({ movieData, onClose, onSelect }: any) {
 
   // const router = useRouter()
   // const pathname = useParams()
-  // const searchParams = useSearchParams()
+  const params = useSearchParams()
 
   // console.log("pathname",pathname)
   // console.log("searchparams",searchParams)
@@ -121,7 +121,7 @@ function LanguageModal({ movieData, onClose, onSelect }: any) {
 
             // console.log("item",item)
 
-            <Link key={item} href={`/movie/${movieData?.id}/shows?lang=${item}`}  >
+            <Link key={item} href={`/movie/${movieData?.id}/shows?lang=${item}&movieId=${params.get("movieId")}`}  >
               <LanguageOption
                 label={item}
               />
